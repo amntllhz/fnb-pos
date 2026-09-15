@@ -34,21 +34,40 @@ model User {
   @@map("user")
 }
 
+enum PaymentMethod {
+  CASH
+  EWALLET
+  BANK_TRANSFER
+  QRIS
+}
+
 model Product {
   id        String      @id @default(uuid())
   name      String
   price     Int
+  imageUrl  String?
   createdAt DateTime    @default(now())
   items     OrderItem[]
 }
 
 model Order {
-  id        String      @id @default(uuid())
-  cashier   User        @relation(fields: [cashierId], references: [id])
-  cashierId String
-  total     Int
-  items     OrderItem[]
-  createdAt DateTime    @default(now())
+  id            String        @id @default(uuid())
+  cashier       User          @relation(fields: [cashierId], references: [id])
+  cashierId     String
+  total         Int
+  paymentMethod PaymentMethod
+  items         OrderItem[]
+  createdAt     DateTime      @default(now())
+
+  @@index([createdAt])
+}
+
+model StoreSetting {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String?
+  address   String?
+  updatedAt DateTime @updatedAt
 }
 
 model OrderItem {

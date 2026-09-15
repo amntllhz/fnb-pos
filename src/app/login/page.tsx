@@ -37,7 +37,7 @@ export default function LoginPage() {
                             <Field>
                                 <FieldLabel className='text-xs' htmlFor="email">Email <span className="text-destructive">*</span></FieldLabel>
                                 <div className="relative">
-                                    <Mail className="absolute left-3 top-1/2 -translate-y-2 size-4 text-input" />
+                                    <Mail className="absolute left-3 top-1/2 -translate-y-2 size-4 text-neutral-300" />
                                     <Input
                                         id="email"
                                         name="email"
@@ -48,15 +48,15 @@ export default function LoginPage() {
                                         aria-invalid={!!fieldErrors.email}
                                         className='text-foreground text-[10px] pl-9 placeholder:text-foreground/40 placeholder:text-xs'
                                     />
-                                    {fieldErrors.email && (
-                                        <FieldDescription className="text-destructive text-[10px]">{fieldErrors.email}</FieldDescription>
-                                    )}
                                 </div>
+                                {fieldErrors.email && (
+                                    <FieldDescription className="text-destructive text-[10px]">{fieldErrors.email}</FieldDescription>
+                                )}
                             </Field>
                             <Field>
                                 <FieldLabel className='text-xs' htmlFor="password">Password <span className="text-destructive">*</span></FieldLabel>
                                 <div className='relative'>
-                                    <Lock className="absolute left-3 top-1/2 -translate-y-2 size-4 text-input" />
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-2 size-4 text-neutral-300" />
                                     <Input
                                         id="password"
                                         name="password"
@@ -72,12 +72,12 @@ export default function LoginPage() {
                                         onClick={() => setShowPassword((prev) => !prev)}
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
                                     >
-                                        {showPassword ? <EyeOff className="size-4 text-input" /> : <Eye className="size-4 text-input" />}
+                                        {showPassword ? <EyeOff className="size-4 text-neutral-300" /> : <Eye className="size-4 text-neutral-300" />}
                                     </button>
-                                    {fieldErrors.password && (
-                                        <FieldDescription className="text-destructive text-[10px]">{fieldErrors.password}</FieldDescription>
-                                    )}
                                 </div>
+                                {fieldErrors.password && (
+                                    <FieldDescription className="text-destructive text-[10px]">{fieldErrors.password}</FieldDescription>
+                                )}
                             </Field>
                             <Button size='lg' type='submit' className='w-full mt-4 bg-prim cursor-pointer hover:bg-prim-dark' disabled={isPending}>
                                 {isPending ? (
