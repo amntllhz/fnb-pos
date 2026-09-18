@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { LayoutDashboard, Package, Settings2, History, BarChart3, Settings, LogOut } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
+import SidebarLogo from "@/components/sidebar-logo"
 import {
     Sidebar, SidebarHeader, SidebarContent, SidebarGroup, SidebarGroupContent,
     SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarFooter,
@@ -29,8 +30,10 @@ export function AppSidebar({ role }: { role: string }) {
     }
 
     return (
-        <Sidebar>
-            <SidebarHeader />
+        <Sidebar collapsible="icon">
+            <SidebarHeader>
+                <SidebarLogo />
+            </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupContent>
@@ -40,6 +43,7 @@ export function AppSidebar({ role }: { role: string }) {
                                     <SidebarMenuButton
                                         render={<Link href={item.url} />}
                                         isActive={pathname === item.url}
+                                        className="data-active:bg-prim/5 data-active:text-prim"
                                     >
                                         <item.icon />
                                         <span>{item.title}</span>
