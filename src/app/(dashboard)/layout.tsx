@@ -11,9 +11,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
     return (
         <SidebarProvider>
             <AppSidebar role={session.user.role} />
-            <div className="p-4">
-                <SidebarTrigger />
-            </div>
             <SidebarInset>
                 <main className="p-6">{children}</main>
             </SidebarInset>

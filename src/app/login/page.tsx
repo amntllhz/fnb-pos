@@ -30,7 +30,7 @@ export default function LoginPage() {
                 <Card className='max-w-sm w-full space-y-2'>
                     <CardHeader>
                         <Image src={logoMark} alt="" className='w-30 h-auto mx-auto py-1' loading='eager' />
-                        <CardDescription className='text-xs text-foreground/40 text-center'>Masukkan kredensial anda</CardDescription>
+                        <CardDescription className='text-xs text-neutral-300 text-center'>Masukkan kredensial anda</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form action={handleLogin} className='space-y-3'>

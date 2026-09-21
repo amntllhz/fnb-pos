@@ -2,7 +2,7 @@
 
 import { useSidebar } from "@/components/ui/sidebar"
 import Image from "next/image"
-import logoFull from '@/assets/logo-duotone.svg'
+import logoFull from '@/assets/logo-red.svg'
 import logoShape from '@/assets/logo-shape.svg'
 
 function SidebarLogo() {
@@ -10,10 +10,10 @@ function SidebarLogo() {
     const isCollapsed = state === "collapsed"
 
     return (
-        <div className="relative flex items-center h-10 w-full px-2 py-2 overflow-hidden">
+        <div className="relative flex items-center h-10 w-full px-1.5 py-2 overflow-hidden">
             {/* Logo Shape (Tampil saat Collapsed) */}
             <div
-                className={`absolute left-2 transition-all duration-200 ease-in-out ${isCollapsed
+                className={`absolute left-1.5 transition-all duration-200 ease-in-out ${isCollapsed
                     ? "opacity-100 scale-100"
                     : "opacity-0 scale-75 pointer-events-none"
                     }`}

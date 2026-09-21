@@ -1,22 +1,11 @@
-import { prisma } from '@/lib/prisma'
-import { ProductForm } from './product-form'
-import { ProductItem } from './product-item'
+import { headers } from "next/headers"
+import { auth } from "@/lib/auth"
+import { prisma } from "@/lib/prisma"
+import { ProductList } from "./product-list"
 
 export default async function ProductsPage() {
-    const products = await prisma.product.findMany({ orderBy: { createdAt: 'desc' } })
+    const session = await auth.api.getSession({ headers: await headers() })
+    const products = await prisma.product.findMany({ orderBy: { createdAt: "desc" } })
 
-    return (
-        <div>
-            <ProductForm />
-            <ul>
-                {products.map((p) => (
-                    <ul>
-                        {products.map((p) => (
-                            <ProductItem key={p.id} product={p} />
-                        ))}
-                    </ul>
-                ))}
-            </ul>
-        </div>
-    )
+    return <ProductList products={products as any} role={session?.user.role} />
 }
