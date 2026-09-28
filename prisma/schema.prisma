@@ -17,6 +17,13 @@ enum Role {
   KASIR
 }
 
+enum Category {
+  PEDAS
+  GURIH
+  MANIS
+  SEGAR
+}
+
 model User {
   id            String    @id @default(uuid())
   name          String
@@ -41,11 +48,12 @@ enum PaymentMethod {
   QRIS
 }
 
-model Product {
+model Menu {
   id        String      @id @default(uuid())
   name      String
   price     Int
   imageUrl  String?
+  category  Category[]
   createdAt DateTime    @default(now())
   items     OrderItem[]
 }
@@ -71,13 +79,13 @@ model StoreSetting {
 }
 
 model OrderItem {
-  id        String  @id @default(uuid())
-  order     Order   @relation(fields: [orderId], references: [id])
-  orderId   String
-  product   Product @relation(fields: [productId], references: [id])
-  productId String
-  quantity  Int
-  price     Int
+  id       String @id @default(uuid())
+  order    Order  @relation(fields: [orderId], references: [id])
+  orderId  String
+  menu     Menu   @relation(fields: [menuId], references: [id])
+  menuId   String
+  quantity Int
+  price    Int
 }
 
 model Session {

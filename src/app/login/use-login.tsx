@@ -34,7 +34,7 @@ export function useLogin() {
                 setPassword('')
                 return
             }
-            router.push('/products')
+            router.push('/menus')
             router.refresh()
         })
     }
