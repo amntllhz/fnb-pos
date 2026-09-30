@@ -96,12 +96,14 @@ export function AppSidebar({ role }: { role: string }) {
                                 {visibleItems.map((item) => (
                                     <SidebarMenuItem key={item.url}>
                                         <SidebarMenuButton
-                                            render={<Link href={item.url} />}
+                                            asChild
                                             isActive={pathname === item.url}
                                             className="text-xs text-neutral-400 data-active:bg-prim/5 data-active:text-prim data-active:hover:bg-prim/5 data-active:hover:text-prim"
                                         >
-                                            {item.icon}
-                                            <span>{item.title}</span>
+                                            <Link href={item.url}>
+                                                {item.icon}
+                                                <span>{item.title}</span>
+                                            </Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 ))}
@@ -113,11 +115,13 @@ export function AppSidebar({ role }: { role: string }) {
                     <SidebarMenu>
                         <SidebarMenuItem>
                             <AlertDialog>
-                                <AlertDialogTrigger render={<SidebarMenuButton className="text-xs text-neutral-400 cursor-pointer" />} className="w-full">
-                                    <svg className="size-4" width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M16 17L21 12M21 12L16 7M21 12H9M9 3H7.8C6.11984 3 5.27976 3 4.63803 3.32698C4.07354 3.6146 3.6146 4.07354 3.32698 4.63803C3 5.27976 3 6.11984 3 7.8V16.2C3 17.8802 3 18.7202 3.32698 19.362C3.6146 19.9265 4.07354 20.3854 4.63803 20.673C5.27976 21 6.11984 21 7.8 21H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                    <span>Log Out</span>
+                                <AlertDialogTrigger asChild>
+                                    <SidebarMenuButton className="text-xs text-neutral-400 cursor-pointer w-full">
+                                        <svg className="size-4" width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M16 17L21 12M21 12L16 7M21 12H9M9 3H7.8C6.11984 3 5.27976 3 4.63803 3.32698C4.07354 3.6146 3.6146 4.07354 3.32698 4.63803C3 5.27976 3 6.11984 3 7.8V16.2C3 17.8802 3 18.7202 3.32698 19.362C3.6146 19.9265 4.07354 20.3854 4.63803 20.673C5.27976 21 6.11984 21 7.8 21H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                        <span>Log Out</span>
+                                    </SidebarMenuButton>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
