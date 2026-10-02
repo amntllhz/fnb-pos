@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useEffect } from "react"
+import { useActionState, useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -8,11 +8,12 @@ import { Field, FieldLabel } from "@/components/ui/field"
 import { createMenu } from "@/lib/actions/menu"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ImageDropzone } from "@/components/image-dropzone"
-import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group"
 import { categories } from "@/lib/constants"
+import { CurrencyInput } from "@/components/currency-input"
 
 export function MenuFormDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
     const [state, formAction, isPending] = useActionState(createMenu, { error: null, success: false })
+    const [price, setPrice] = useState(0)
 
     useEffect(() => {
         if (state.success) onOpenChange(false)
@@ -35,7 +36,7 @@ export function MenuFormDialog({ open, onOpenChange }: { open: boolean; onOpenCh
                             <div className="flex flex-wrap gap-3">
                                 {categories.map((cat) => (
                                     <label key={cat.value} className="flex items-center gap-2 text-sm">
-                                        <Checkbox name="category" value={cat.value} />
+                                        <Checkbox name="category" className="data-[state=checked]:bg-prim data-[state=checked]:border-prim data-[state=checked]:text-white" value={cat.value} />
                                         {cat.label}
                                     </label>
                                 ))}
@@ -47,18 +48,10 @@ export function MenuFormDialog({ open, onOpenChange }: { open: boolean; onOpenCh
                         </Field>
                         <Field>
                             <FieldLabel className="text-xs" htmlFor="price">Harga</FieldLabel>
-                            <InputGroup>
-                                <InputGroupAddon>
-                                    <InputGroupText>Rp</InputGroupText>
-                                </InputGroupAddon>
-                                <InputGroupInput id="price" name="price" required placeholder="0.00" />
-                                <InputGroupAddon align="inline-end">
-                                    <InputGroupText>IDR</InputGroupText>
-                                </InputGroupAddon>
-                            </InputGroup>
+                            <CurrencyInput name="price" value={price} onValueChange={setPrice} />
                         </Field>
                         {state.error && <p className="text-destructive text-sm">{state.error}</p>}
-                        <Button type="submit" className="w-full" disabled={isPending}>
+                        <Button type="submit" className="w-full bg-prim hover:bg-prim-dark" disabled={isPending}>
                             {isPending ? "Menyimpan..." : "Simpan"}
                         </Button>
                     </form>

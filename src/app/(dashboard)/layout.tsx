@@ -12,7 +12,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <SidebarProvider>
             <AppSidebar role={session.user.role} />
             <SidebarInset>
-                <main className="p-6">{children}</main>
+                <main className="py-4 px-6">{children}</main>
             </SidebarInset>
         </SidebarProvider>
     )

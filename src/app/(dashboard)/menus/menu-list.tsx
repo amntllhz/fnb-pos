@@ -17,7 +17,7 @@ export function MenuList({ menus, role }: { menus: Product[]; role?: string }) {
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <div className="flex items-center justify-start gap-4">
-                    <SidebarTrigger />
+                    <SidebarTrigger className="text-neutral-300 transition-all duration-300 ease-in-out" />
                     <DynamicBreadcrumb />
                 </div>
             </div>

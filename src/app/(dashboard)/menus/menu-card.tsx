@@ -38,7 +38,9 @@ export function MenuCard({ menu, role }: { menu: Menu, role?: string }) {
         <Card className="overflow-hidden p-1 rounded-xl gap-0">
             <div className="relative w-full bg-neutral-100 ring ring-inset ring-neutral-200 rounded-lg">
                 {menu.imageUrl ? (
-                    <Image src={menu.imageUrl} alt={menu.name} width={480} height={0} className="rounded-lg w-full h-40 object-cover" />
+                    <div className="rounded-lg ring ring-neutral-200 overflow-hidden">
+                        <Image src={menu.imageUrl} alt={menu.name} width={440} height={0} className="object-cover w-full h-40" />
+                    </div>
                 ) : (
                     <div className="flex h-40 w-full items-center justify-center">
                         <Package className="size-8 text-neutral-100" />
@@ -46,19 +48,14 @@ export function MenuCard({ menu, role }: { menu: Menu, role?: string }) {
                 )}
                 <div className="absolute top-2 left-2.5 flex-col space-y-1">
                     <p className="font-medium text-xs truncate">{menu.name}</p>
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-start gap-2">
                         {menu.category.map((cat, index) => (
                             <Fragment key={cat}>
                                 {/* Tampilkan Separator hanya jika bukan elemen pertama (index > 0) */}
                                 {index > 0 && (
-                                    <Separator
-                                        orientation="vertical"
-                                        className="mx-2 bg-muted-foreground"
-                                    />
+                                    <span className=" h-2.5 border-l border-neutral-300" aria-hidden="true" />
                                 )}
-                                <span className="text-[10px] leading-none text-muted-foreground">
-                                    {categories.find((c) => c.value === cat)?.label ?? cat}
-                                </span>
+                                <p className="text-[10px] leading-none text-neutral-400">{categories.find((c) => c.value === cat)?.label ?? cat}</p>
                             </Fragment>
                         ))}
                     </div>
@@ -69,8 +66,10 @@ export function MenuCard({ menu, role }: { menu: Menu, role?: string }) {
                             <Pencil className="size-3.5" />
                         </Button>
                         <AlertDialog>
-                            <AlertDialogTrigger render={<Button size="icon-sm" variant="destructive" />}>
-                                <Trash2 className="size-3.5" />
+                            <AlertDialogTrigger asChild>
+                                <Button size="icon-sm" variant="destructive">
+                                    <Trash2 className="size-3.5" />
+                                </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
@@ -87,6 +86,7 @@ export function MenuCard({ menu, role }: { menu: Menu, role?: string }) {
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                         </AlertDialog>
+
                     </div>
                 )}
             </div>

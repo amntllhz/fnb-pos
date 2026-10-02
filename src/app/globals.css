@@ -136,4 +136,25 @@
   html {
     @apply font-sans;       
   }
+
+  /* 2. Custom Style Scrollbar (Firefox & standar CSS) */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  /* 3. Custom Style Scrollbar (Webkit: Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 0.25rem; /* 4px - sangat tipis & rapi */
+    height: 0.25rem;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: 9999px;
+  }
 }

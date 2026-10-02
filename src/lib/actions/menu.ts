@@ -11,7 +11,7 @@ import path from 'path'
 const menuSchema = z.object({
     name: z.string().min(1),
     price: z.coerce.number().int().positive(),
-    category: z.array(z.enum(['PEDAS', 'GURIH', 'MANIS', 'SEGAR']))
+    category: z.array(z.enum(['PEDAS', 'GURIH', 'MANIS', 'SEGAR'])).min(1, "Kategori wajib dipilih")
 })
 
 async function saveImage(file: File): Promise<string> {
@@ -36,7 +36,7 @@ export async function createMenu(prevState: unknown, formData: FormData) {
         price: formData.get('price'),
         category: formData.getAll('category')
     })
-    if (!parsed.success) return { error: 'Nama atau harga gak valid', success: false }
+    if (!parsed.success) return { error: 'Validasi gagal. Silahkan periksa kembali inputan Anda.', success: false }
 
     // 3. Simpan
     const imageFile = formData.get('image') as File

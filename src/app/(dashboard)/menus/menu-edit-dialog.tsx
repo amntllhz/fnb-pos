@@ -70,7 +70,7 @@ export function MenuEditDialog({
                         </Field>
                         <Field>
                             <FieldLabel htmlFor="image">Gambar</FieldLabel>
-                            <ImageDropzone name="image" defaultPreview={menu?.imageUrl} />
+                            <ImageDropzone name="image" defaultPreview={menu?.imageUrl} allowRemove={false} />
                         </Field>
                         <Field>
                             <FieldLabel className="text-xs" htmlFor="price">Harga</FieldLabel>
