@@ -3,12 +3,14 @@
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { authClient } from "@/lib/auth-client"
+import Image from "next/image"
 import SidebarLogo from "@/components/sidebar-logo"
 import {
     Sidebar, SidebarHeader, SidebarContent, SidebarGroup, SidebarGroupContent,
     SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarFooter,
 } from "@/components/ui/sidebar"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogFooter } from "@/components/ui/alert-dialog"
+import Logout from "@/assets/logout.svg"
 
 const menuItems = [
     {
@@ -123,19 +125,20 @@ export function AppSidebar({ role }: { role: string }) {
                                         <span>Log Out</span>
                                     </SidebarMenuButton>
                                 </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Konfirmasi Log Out</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Apakah Anda yakin ingin keluar dari aplikasi?
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Batal</AlertDialogCancel>
-                                        <AlertDialogAction onClick={handleLogout}>
-                                            Ya, Log Out
+                                <AlertDialogContent className="justify-center items-center w-full flex flex-col">
+                                    <div className="flex flex-col py-1.5">
+                                        <Image src={Logout} alt="Logout" className="w-full h-28" />
+                                        <div className="space-y-1">
+                                            <p className="px-5 font-semibold text-center text-xs text-gray-800">Yakin ingin keluar?</p>
+                                            <p className='text-[11px] text-gray-400 text-center'>Sesi anda akan segera diakhiri</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex w-full justify-center items-center gap-3 mt-2">
+                                        <AlertDialogCancel className="flex-1 text-xs">Batal</AlertDialogCancel>
+                                        <AlertDialogAction onClick={handleLogout} className="flex-1 text-xs bg-prim!">
+                                            Log Out
                                         </AlertDialogAction>
-                                    </AlertDialogFooter>
+                                    </div>
                                 </AlertDialogContent>
                             </AlertDialog>
                         </SidebarMenuItem>
