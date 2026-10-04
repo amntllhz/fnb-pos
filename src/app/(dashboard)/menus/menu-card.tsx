@@ -63,8 +63,8 @@ export function MenuCard({ menu, role }: { menu: Menu, role?: string }) {
                 </div>
                 {isOwner && (
                     <div className="absolute top-1 right-1 flex gap-1">
-                        <Button size="icon-sm" variant="secondary" onClick={() => setEditOpen(true)}>
-                            <Pencil className="size-3.5" />
+                        <Button size="icon-sm" variant="secondary" className="bg-black/20 hover:bg-black/10 backdrop-blur-sm" onClick={() => setEditOpen(true)}>
+                            <Pencil className="size-3.5 text-white" />
                         </Button>
                         <AlertDialog>
                             <AlertDialogTrigger asChild>

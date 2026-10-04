@@ -5,7 +5,7 @@ import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { mkdir, writeFile } from 'fs/promises'
+import { mkdir, writeFile, unlink } from 'fs/promises'
 import path from 'path'
 
 const menuSchema = z.object({
@@ -83,11 +83,25 @@ export async function updateMenu(prevState: unknown, formData: FormData) {
     return { error: null, success: true }
 }
 
+async function deleteImageFile(imageUrl: string | null) {
+    if (!imageUrl) return // gak ada gambar, gak ada yang perlu dihapus
+    const filePath = path.join(process.cwd(), 'public', imageUrl)
+    try {
+        await unlink(filePath)
+    } catch (err) {
+        // Gagal hapus file (misal file emang udah gak ada) BUKAN alasan buat gagalin
+        // keseluruhan proses delete menu — data di DB tetep harus kehapus
+        console.error('Gagal hapus file gambar:', err)
+    }
+}
+
 export async function deleteMenu(id: string) {
     const session = await auth.api.getSession({ headers: await headers() })
     if (!session) throw new Error('Belum login')
     if (session.user.role !== 'OWNER') throw new Error('Cuma owner yang bisa hapus produk')
 
-    await prisma.menu.delete({ where: { id } })
+    const menu = await prisma.menu.delete({ where: { id } })
+    await deleteImageFile(menu.imageUrl)
+
     revalidatePath('/menus')
 }

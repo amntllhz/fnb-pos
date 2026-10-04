@@ -29,8 +29,8 @@ export function DynamicBreadcrumb() {
                 <BreadcrumbList>
                     {/* Home Link (Opsional) */}
                     <BreadcrumbItem className="text-xs text-neutral-400">
-                        <BreadcrumbLink render={<Link href="/dashboard" />}>
-                            Dashboard
+                        <BreadcrumbLink asChild>
+                            <Link href="/dashboard">Dashboard</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem >
 
