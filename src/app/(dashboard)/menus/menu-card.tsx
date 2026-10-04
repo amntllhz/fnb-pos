@@ -11,7 +11,6 @@ import { Package, Pencil, Trash2 } from "lucide-react"
 import { MenuEditDialog } from "./menu-edit-dialog"
 import { deleteMenu } from "@/lib/actions/menu"
 import { categories } from "@/lib/constants"
-import { Separator } from "@/components/ui/separator"
 import { Fragment } from "react"
 import { toast } from "sonner"
 
@@ -27,7 +26,9 @@ export function MenuCard({ menu, role }: { menu: Menu, role?: string }) {
         startDeleteTransition(async () => {
             try {
                 await deleteMenu(menu.id)
-                toast.success(`"${menu.name}" berhasil dihapus`)
+                toast.success(`${menu.name} berhasil dihapus`, {
+                    description: "Menu berhasil dihapus dari daftar menu",
+                })
             } catch {
                 toast.error(`Gagal menghapus "${menu.name}". Coba lagi.`)
             }

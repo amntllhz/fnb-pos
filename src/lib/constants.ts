@@ -4,3 +4,5 @@ export const categories = [
     { value: 'MANIS', label: 'Manis' },
     { value: 'SEGAR', label: 'Segar' },
 ] as const
+
+export type Category = (typeof categories)[number]

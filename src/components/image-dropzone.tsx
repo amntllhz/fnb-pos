@@ -40,7 +40,7 @@ export function ImageDropzone({
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleDrop}
-            className={`relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-md border-[1.5px] border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-input'
+            className={`relative flex h-full w-full items-center justify-center overflow-hidden rounded-md border-[1.5px] border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-input'
                 } ${!preview ? 'cursor-pointer' : ''}`}
         >
             <input ref={inputRef} type="file" name={name} accept="image/*" className="hidden"

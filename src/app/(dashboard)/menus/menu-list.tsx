@@ -17,14 +17,14 @@ export function MenuList({ menus, role }: { menus: Product[]; role?: string }) {
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <div className="flex items-center justify-start gap-4">
-                    <SidebarTrigger className="text-neutral-300 transition-all duration-300 ease-in-out" />
+                    <SidebarTrigger className="text-neutral-300 transition-all duration-300 ease-in-out hover:text-sidebar-accent-foreground" />
                     <DynamicBreadcrumb />
                 </div>
             </div>
 
             <div className="flex flex-col space-y-1">
-                <h1 className="text-xl font-bold">Daftar Produk</h1>
-                <p className="text-xs text-neutral-400">Lakukan penyesuaian pada menu disini</p>
+                <h1 className="text-xl font-extrabold">Daftar Menu</h1>
+                <p className="text-xs text-neutral-400">Lakukan pengelolaan pesanan dan melalui halaman ini</p>
             </div>
 
             {role === "OWNER" && (
