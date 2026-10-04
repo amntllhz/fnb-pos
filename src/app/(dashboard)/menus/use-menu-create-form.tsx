@@ -3,7 +3,7 @@ import { createMenu } from "@/lib/actions/menu"
 
 type FieldErrors = { name?: string; price?: string; category?: string }
 
-export function useMenuForm(onOpenChange: (open: boolean) => void) {
+export function useMenuCreateForm(onOpenChange: (open: boolean) => void) {
     const [state, formAction, isPending] = useActionState(createMenu, { error: null, success: false })
     const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
     const [price, setPrice] = useState<number | undefined>(undefined)

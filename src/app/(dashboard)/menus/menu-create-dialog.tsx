@@ -5,16 +5,16 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Field, FieldLabel, FieldError } from "@/components/ui/field"
 import { ImageDropzone } from "@/components/image-dropzone"
-import { useMenuForm } from "./use-menu-form"
+import { useMenuCreateForm } from "./use-menu-create-form"
 import { NumericFormat } from "react-number-format"
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group"
 import { CategoryCombobox } from "@/components/category-combobox"
 
-export function MenuFormDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function MenuCreateDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
     const {
         handleSubmit, fieldErrors, isPending, state,
         price, setPrice, selectedCategories, setSelectedCategories
-    } = useMenuForm(onOpenChange)
+    } = useMenuCreateForm(onOpenChange)
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { MenuCard } from "@/app/(dashboard)/menus/menu-card"
-import { MenuFormDialog } from "./menu-form-dialog"
+import { MenuCreateDialog } from "./menu-create-dialog"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { DynamicBreadcrumb } from "@/components/dynamic-breadcrumb"
 
@@ -40,7 +40,7 @@ export function MenuList({ menus, role }: { menus: Product[]; role?: string }) {
                 ))}
             </div>
 
-            {role === "OWNER" && <MenuFormDialog key={open ? "open" : "closed"} open={open} onOpenChange={setOpen} />}
+            {role === "OWNER" && <MenuCreateDialog key={open ? "open" : "closed"} open={open} onOpenChange={setOpen} />}
         </div>
     )
 }
