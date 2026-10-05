@@ -12,28 +12,15 @@ import { MenuEditDialog } from "./menu-edit-dialog"
 import { deleteMenu } from "@/lib/actions/menu"
 import { categories } from "@/lib/constants"
 import { Fragment } from "react"
-import { toast } from "sonner"
+import { useDeleteMenu } from "./use-menu-delete"
 
 
 type Menu = { id: string; name: string; price: number; imageUrl: string | null; category: string[] }
 
 export function MenuCard({ menu, role }: { menu: Menu, role?: string }) {
     const [editOpen, setEditOpen] = useState(false)
-    const [isDeleting, startDeleteTransition] = useTransition()
+    const { handleDelete, isDeleting } = useDeleteMenu()
     const isOwner = role === "OWNER"
-
-    function handleDelete() {
-        startDeleteTransition(async () => {
-            try {
-                await deleteMenu(menu.id)
-                toast.success(`${menu.name} berhasil dihapus`, {
-                    description: "Menu berhasil dihapus dari daftar menu",
-                })
-            } catch {
-                toast.error(`Gagal menghapus "${menu.name}". Coba lagi.`)
-            }
-        })
-    }
 
     return (
         <Card className="overflow-hidden p-1 rounded-xl gap-0">
@@ -81,7 +68,7 @@ export function MenuCard({ menu, role }: { menu: Menu, role?: string }) {
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                     <AlertDialogCancel>Batal</AlertDialogCancel>
-                                    <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+                                    <AlertDialogAction onClick={() => handleDelete(menu)} disabled={isDeleting}>
                                         {isDeleting ? "Menghapus..." : "Hapus"}
                                     </AlertDialogAction>
                                 </AlertDialogFooter>

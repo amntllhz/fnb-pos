@@ -29,7 +29,7 @@ export function MenuList({ menus, role }: { menus: Product[]; role?: string }) {
 
             <div className="flex flex-col space-y-1">
                 <h1 className="text-xl font-extrabold">Daftar Menu</h1>
-                <p className="text-xs text-neutral-400">Lakukan pengelolaan pesanan dan melalui halaman ini</p>
+                <p className="text-xs text-neutral-400">Lakukan pengelolaan pesanan dan menu melalui halaman ini</p>
             </div>
 
             <Tabs defaultValue="all" className="space-y-2 mt-6">

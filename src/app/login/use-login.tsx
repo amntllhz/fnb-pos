@@ -34,6 +34,10 @@ export function useLogin() {
                 setPassword('')
                 return
             }
+
+            toast.success('Login Berhasil', {
+                description: 'Selamat Datang kembali di sistem',
+            })
             router.push('/menus')
             router.refresh()
         })

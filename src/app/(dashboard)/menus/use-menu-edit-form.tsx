@@ -1,5 +1,6 @@
 import { startTransition, useActionState, useEffect, useState } from "react"
 import { updateMenu } from "@/lib/actions/menu"
+import { toast } from "sonner";
 
 type FieldErrors = { name?: string; price?: string; category?: string }
 
@@ -23,7 +24,12 @@ export function useMenuEditForm(
     }, [open, menu])
 
     useEffect(() => {
-        if (state.success) onOpenChange(false)
+        if (state.success) {
+            toast.success("Berhasil memperbarui", {
+                description: "Menu telah berhasil diperbarui",
+            })
+            onOpenChange(false)
+        }
     }, [state.success, onOpenChange])
 
     function handleSubmit(formData: FormData) {

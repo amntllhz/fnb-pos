@@ -1,5 +1,6 @@
 import { startTransition, useActionState, useEffect, useState } from "react"
 import { createMenu } from "@/lib/actions/menu"
+import { toast } from "sonner";
 
 type FieldErrors = { name?: string; price?: string; category?: string }
 
@@ -10,7 +11,12 @@ export function useMenuCreateForm(onOpenChange: (open: boolean) => void) {
     const [selectedCategories, setSelectedCategories] = useState<string[]>([])
 
     useEffect(() => {
-        if (state.success) onOpenChange(false)
+        if (state.success) {
+            toast.success("Berhasil menambahkan", {
+                description: "Menu baru telah ditambahkan ke daftar",
+            })
+            onOpenChange(false)
+        }
     }, [state.success, onOpenChange])
 
     function handleSubmit(formData: FormData) {
