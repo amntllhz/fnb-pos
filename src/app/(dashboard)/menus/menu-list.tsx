@@ -19,6 +19,7 @@ export function MenuList({ menus, role }: { menus: Product[]; role?: string }) {
 
     return (
         <div className="space-y-4">
+
             <div className="flex items-center justify-between">
                 <div className="flex items-center justify-start gap-4">
                     <SidebarTrigger className="text-neutral-300 transition-all duration-300 ease-in-out hover:text-sidebar-accent-foreground" />
@@ -31,7 +32,7 @@ export function MenuList({ menus, role }: { menus: Product[]; role?: string }) {
                 <p className="text-xs text-neutral-400">Lakukan pengelolaan pesanan dan melalui halaman ini</p>
             </div>
 
-            <Tabs defaultValue="all">
+            <Tabs defaultValue="all" className="space-y-2 mt-6">
 
                 <div className="flex items-center justify-between">
                     <TabsList>
@@ -59,7 +60,7 @@ export function MenuList({ menus, role }: { menus: Product[]; role?: string }) {
                             message="Tambahkan menu pertama melalui tombol tambah menu"
                         />
                     ) : (
-                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 mt-4">
+                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                             {menus.map((menu) => (
                                 <MenuCard key={menu.id} menu={menu} role={role} />
                             ))}
@@ -78,7 +79,7 @@ export function MenuList({ menus, role }: { menus: Product[]; role?: string }) {
                                     message={`Menu dengan kategori ${cat.label} belum tersedia`}
                                 />
                             ) : (
-                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 mt-4">
+                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 ">
                                     {filtered.map((menu) => (
                                         <MenuCard key={menu.id} menu={menu} role={role} />
                                     ))}
