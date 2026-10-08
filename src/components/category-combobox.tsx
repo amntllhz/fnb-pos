@@ -20,9 +20,11 @@ import { categories } from "@/lib/constants"
 export function CategoryCombobox({
     value,
     onChange,
+    invalid = false
 }: {
     value: string[]
     onChange: (value: string[]) => void
+    invalid?: boolean
 }) {
     const anchor = useComboboxAnchor()
 
@@ -33,8 +35,9 @@ export function CategoryCombobox({
             items={categories}
             value={value}
             onValueChange={onChange}
+            aria-invalid={invalid}
         >
-            <ComboboxChips ref={anchor} className="w-full max-w-xs">
+            <ComboboxChips ref={anchor} className={`w-full ${invalid ? 'border-destructive ring-3 ring-destructive/20' : ''}`}>
                 <ComboboxValue>
                     {(selectedValues: string[]) => (
                         <React.Fragment>

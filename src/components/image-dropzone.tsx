@@ -6,8 +6,8 @@ import { ImagePlus, X } from 'lucide-react'
 import { Button } from './ui/button';
 
 export function ImageDropzone({
-    name, defaultPreview, allowRemove = true
-}: { name: string; defaultPreview?: string | null, allowRemove?: boolean }) {
+    name, defaultPreview, allowRemove = true, invalid = false
+}: { name: string; defaultPreview?: string | null, allowRemove?: boolean, invalid?: boolean }) {
     const inputRef = useRef<HTMLInputElement>(null)
     const [preview, setPreview] = useState<string | null>(defaultPreview ?? null)
     const [isDragging, setIsDragging] = useState(false)
@@ -40,7 +40,9 @@ export function ImageDropzone({
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleDrop}
-            className={`relative flex h-full w-full items-center justify-center overflow-hidden rounded-md border-[1.5px] border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-input'
+            aria-invalid={invalid}
+            className={`relative flex h-full w-full items-center justify-center overflow-hidden rounded-md border-[1.5px] border-dashed transition-colors 
+                ${invalid ? 'border-destructive' : isDragging ? 'border-primary bg-primary/5' : 'border-input'
                 } ${!preview ? 'cursor-pointer' : ''}`}
         >
             <input ref={inputRef} type="file" name={name} accept="image/*" className="hidden"

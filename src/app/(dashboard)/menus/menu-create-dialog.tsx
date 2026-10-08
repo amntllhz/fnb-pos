@@ -40,7 +40,7 @@ export function MenuCreateDialog({ open, onOpenChange }: { open: boolean; onOpen
                             </Field>
                             <Field className="col-span-3">
                                 <FieldLabel className="text-xs text-neutral-400">Kategori</FieldLabel>
-                                <CategoryCombobox value={selectedCategories} onChange={setSelectedCategories} />
+                                <CategoryCombobox value={selectedCategories} onChange={setSelectedCategories} invalid={!!fieldErrors.category} />
                                 {fieldErrors.category && <FieldError className="text-[10px]">{fieldErrors.category}</FieldError>}
                             </Field>
                             <Field className="col-span-3">
@@ -64,10 +64,10 @@ export function MenuCreateDialog({ open, onOpenChange }: { open: boolean; onOpen
                             </Field>
                             <Field className="row-span-3 col-span-2">
                                 <FieldLabel className="text-xs text-neutral-400" htmlFor="image">Gambar</FieldLabel>
-                                <ImageDropzone name="image" />
+                                <ImageDropzone name="image" invalid={!!fieldErrors.image} />
+                                {fieldErrors.image && <FieldError className="text-[10px]">{fieldErrors.image}</FieldError>}
                             </Field>
                         </div>
-                        {state.error && <p className="text-destructive text-sm">{state.error}</p>}
                         <Button type="submit" className="w-full bg-prim mt-2 hover:bg-prim-dark" disabled={isPending}>
                             {isPending ? "Menyimpan..." : "Simpan"}
                         </Button>
