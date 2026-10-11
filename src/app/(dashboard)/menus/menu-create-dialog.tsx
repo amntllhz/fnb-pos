@@ -9,6 +9,7 @@ import { useMenuCreateForm } from "./use-menu-create-form"
 import { NumericFormat } from "react-number-format"
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group"
 import { CategoryCombobox } from "@/components/category-combobox"
+import { Spinner } from "@/components/ui/spinner"
 
 export function MenuCreateDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
     const {
@@ -69,7 +70,12 @@ export function MenuCreateDialog({ open, onOpenChange }: { open: boolean; onOpen
                             </Field>
                         </div>
                         <Button type="submit" className="w-full bg-prim mt-2 hover:bg-prim-dark" disabled={isPending}>
-                            {isPending ? "Menyimpan..." : "Simpan"}
+                            {isPending ?
+                                <>
+                                    <Spinner className='mr-1.5' />
+                                    Menyimpan...
+                                </>
+                                : "Simpan"}
                         </Button>
                     </form>
                 )}

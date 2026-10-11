@@ -9,6 +9,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/
 import { CategoryCombobox } from "@/components/category-combobox"
 import { NumericFormat } from "react-number-format"
 import { useMenuEditForm } from "./use-menu-edit-form"
+import { Spinner } from "@/components/ui/spinner"
 
 type Menu = { id: string; name: string; price: number; imageUrl: string | null; category: string[] }
 
@@ -74,7 +75,12 @@ export function MenuEditDialog({
                         </div>
                         {state.error && <p className="text-destructive text-sm">{state.error}</p>}
                         <Button type="submit" className="w-full bg-prim mt-2 hover:bg-prim-dark" disabled={isPending}>
-                            {isPending ? "Menyimpan..." : "Update"}
+                            {isPending ?
+                                <>
+                                    <Spinner className='mr-1.5' />
+                                    Menyimpan...
+                                </>
+                                : "Update"}
                         </Button>
                     </form>
                 )}
