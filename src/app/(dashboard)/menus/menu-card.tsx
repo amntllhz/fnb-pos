@@ -9,10 +9,10 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Package, Pencil, Trash2 } from "lucide-react"
 import { MenuEditDialog } from "./menu-edit-dialog"
-import { deleteMenu } from "@/lib/actions/menu"
 import { categories } from "@/lib/constants"
 import { Fragment } from "react"
 import { useDeleteMenu } from "./use-menu-delete"
+import Delete from "@/assets/delete.svg"
 
 
 type Menu = { id: string; name: string; price: number; imageUrl: string | null; category: string[] }
@@ -59,19 +59,20 @@ export function MenuCard({ menu, role }: { menu: Menu, role?: string }) {
                                     <Trash2 className="size-3.5" />
                                 </Button>
                             </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Hapus {menu.name}?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Tindakan ini gak bisa dibatalin. Produk bakal hilang permanen dari katalog.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Batal</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDelete(menu)} disabled={isDeleting}>
+                            <AlertDialogContent className="justify-center items-center w-full flex flex-col">
+                                <div className="flex flex-col py-1.5">
+                                    <Image src={Delete} alt="Logout" className="w-full h-28" />
+                                    <div className="space-y-1">
+                                        <p className="px-5 font-semibold text-center text-xs text-gray-800">Yakin ingin menghapus?</p>
+                                        <p className='text-[11px] text-gray-400 text-center'>Menu ini akan dihapus dari daftar</p>
+                                    </div>
+                                </div>
+                                <div className="flex w-full justify-center items-center gap-3 mt-2">
+                                    <AlertDialogCancel className="flex-1 text-xs">Batal</AlertDialogCancel>
+                                    <AlertDialogAction className="flex-1 text-xs bg-prim! hover:bg-prim-dark!" onClick={() => handleDelete(menu)} disabled={isDeleting}>
                                         {isDeleting ? "Menghapus..." : "Hapus"}
                                     </AlertDialogAction>
-                                </AlertDialogFooter>
+                                </div>
                             </AlertDialogContent>
                         </AlertDialog>
 
