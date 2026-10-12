@@ -71,7 +71,10 @@ export async function updateMenu(prevState: unknown, formData: FormData) {
     const data: Record<string, unknown> = { ...parsed.data }
     const imageFile = formData.get('image') as File
     if (imageFile && imageFile.size > 0) {
-        data.imageUrl = await saveImage(imageFile) // cuma di-update kalo ada file baru dipilih
+        // Hapus gambar lama sebelum simpan yang baru
+        const existing = await prisma.menu.findUnique({ where: { id }, select: { imageUrl: true } })
+        await deleteImageFile(existing?.imageUrl ?? null)
+        data.imageUrl = await saveImage(imageFile)
     }
 
     await prisma.menu.update({
