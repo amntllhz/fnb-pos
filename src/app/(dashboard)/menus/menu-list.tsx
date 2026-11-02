@@ -12,6 +12,10 @@ import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupButton } from "
 import { categories } from "@/lib/constants"
 import { EmptyState } from "@/components/empty-state"
 import NoData from "@/assets/no-data.svg"
+import { useMenuCart } from "./use-menu-cart"
+import { MenuCartPanel } from "./menu-cart-panel"
+import { MenuCheckoutDialog } from "./menu-checkout-dialog"
+import { cn } from "cn"
 
 type Product = { id: string; name: string; price: number; imageUrl: string | null; category: string[] }
 
@@ -19,6 +23,8 @@ export function MenuList({ menus, role }: { menus: Product[]; role?: string }) {
     const [open, setOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
     const [activeTab, setActiveTab] = useState("all")
+    const [checkoutOpen, setCheckoutOpen] = useState(false)
+    const cart = useMenuCart()
 
     const isSearching = searchQuery.trim().length > 0
 
@@ -40,105 +46,138 @@ export function MenuList({ menus, role }: { menus: Product[]; role?: string }) {
         setSearchQuery("")
     }
 
+    const gridClass = cn(
+        'grid grid-cols-2 gap-4 sm:grid-cols-3 animate-in fade-in duration-300',
+        cart.isOpen ? 'lg:grid-cols-3' : 'lg:grid-cols-4'
+    )
+
     return (
-        <div className="space-y-4">
+        <div className="flex min-h-svh min-w-0">
+            <div className="flex min-w-0 flex-1 flex-col gap-4 px-6 py-4">
 
-            <div className="flex items-center justify-between">
-                <div className="flex items-center justify-start gap-4">
-                    <SidebarTrigger className="text-neutral-300 transition-all duration-300 ease-in-out hover:text-sidebar-accent-foreground" />
-                    <DynamicBreadcrumb />
-                </div>
-            </div>
-
-            <div className="flex flex-col space-y-1">
-                <h1 className="text-xl font-extrabold">Daftar Menu</h1>
-                <p className="text-xs text-neutral-400">Lakukan pengelolaan pesanan dan menu melalui halaman ini</p>
-            </div>
-
-            <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-2 mt-6">
-
-                <div className="flex items-center justify-between gap-3">
-                    <TabsList className="shrink-0">
-                        <TabsTrigger className="text-neutral-400 data-active:font-medium data-active:text-prim px-3 font-normal text-xs transition-all duration-300 ease-in-out hover:text-sidebar-accent-foreground" value="all">Semua</TabsTrigger>
-                        {categories.map((cat) => (
-                            <TabsTrigger className="text-neutral-400 data-active:font-medium data-active:text-prim px-2.5 font-normal text-xs transition-all duration-300 ease-in-out hover:text-sidebar-accent-foreground" key={cat.value} value={cat.value}>
-                                {cat.label}
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
-
-                    <div className="flex items-center gap-2 flex-1 justify-end">
-                        <InputGroup className="max-w-56 h-8">
-                            <InputGroupAddon align="inline-start">
-                                <Search className="size-3.5 text-muted-foreground" />
-                            </InputGroupAddon>
-                            <InputGroupInput
-                                placeholder="Cari menu..."
-                                value={searchQuery}
-                                onChange={(e) => handleSearchChange(e.target.value)}
-                                className="text-xs placeholder:text-xs"
-                            />
-                            {isSearching && (
-                                <InputGroupAddon align="inline-end">
-                                    <InputGroupButton
-                                        size="icon-xs"
-                                        onClick={() => handleSearchChange("")}
-                                        aria-label="Hapus pencarian"
-                                    >
-                                        <X className="size-3" />
-                                    </InputGroupButton>
-                                </InputGroupAddon>
-                            )}
-                        </InputGroup>
-
-                        {role === "OWNER" && (
-                            <Button className="flex items-center gap-1.5 pr-4 bg-prim hover:bg-prim-dark shrink-0" onClick={() => setOpen(true)}>
-                                <Plus className="size-4" />
-                                Tambah Menu
-                            </Button>
-                        )}
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-start gap-4">
+                        <SidebarTrigger className="text-neutral-300 transition-all duration-300 ease-in-out hover:text-sidebar-accent-foreground" />
+                        <DynamicBreadcrumb />
                     </div>
                 </div>
 
-                <TabsContent value="all">
-                    {filteredMenus.length === 0 ? (
-                        <EmptyState
-                            icon={NoData}
-                            label={isSearching ? `Tidak ada hasil untuk "${searchQuery}"` : "Menu belum tersedia"}
-                            message={isSearching ? "Coba gunakan kata kunci yang berbeda" : "Tambahkan menu pertama melalui tombol tambah menu"}
-                        />
-                    ) : (
-                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                            {filteredMenus.map((menu) => (
-                                <MenuCard key={menu.id} menu={menu} role={role} />
-                            ))}
-                        </div>
-                    )}
-                </TabsContent>
+                <div className="flex flex-col space-y-1">
+                    <h1 className="text-xl font-extrabold">Daftar Menu</h1>
+                    <p className="text-xs text-neutral-400">Lakukan pengelolaan pesanan dan menu melalui halaman ini</p>
+                </div>
 
-                {categories.map((cat) => {
-                    const filtered = menus.filter((menu) => menu.category.includes(cat.value))
-                    return (
-                        <TabsContent key={cat.value} value={cat.value}>
-                            {filtered.length === 0 ? (
+                <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-2 mt-6">
+
+                    <div className="flex items-center justify-between gap-3">
+                        <TabsList className="shrink-0">
+                            <TabsTrigger className="text-neutral-400 data-active:font-medium data-active:text-prim px-3 font-normal text-xs transition-all duration-300 ease-in-out hover:text-sidebar-accent-foreground" value="all">Semua</TabsTrigger>
+                            {categories.map((cat) => (
+                                <TabsTrigger className="text-neutral-400 data-active:font-medium data-active:text-prim px-2.5 font-normal text-xs transition-all duration-300 ease-in-out hover:text-sidebar-accent-foreground" key={cat.value} value={cat.value}>
+                                    {cat.label}
+                                </TabsTrigger>
+                            ))}
+                        </TabsList>
+
+                        <div className="flex items-center gap-2 flex-1 justify-end">
+                            <InputGroup className="max-w-56 h-8">
+                                <InputGroupAddon align="inline-start">
+                                    <Search className="size-3.5 text-muted-foreground" />
+                                </InputGroupAddon>
+                                <InputGroupInput
+                                    placeholder="Cari menu..."
+                                    value={searchQuery}
+                                    onChange={(e) => handleSearchChange(e.target.value)}
+                                    className="text-xs placeholder:text-xs"
+                                />
+                                {isSearching && (
+                                    <InputGroupAddon align="inline-end">
+                                        <InputGroupButton
+                                            size="icon-xs"
+                                            onClick={() => handleSearchChange("")}
+                                            aria-label="Hapus pencarian"
+                                        >
+                                            <X className="size-3" />
+                                        </InputGroupButton>
+                                    </InputGroupAddon>
+                                )}
+                            </InputGroup>
+
+                            {role === "OWNER" && (
+                                <Button className="flex items-center gap-1.5 pr-4 bg-prim hover:bg-prim-dark shrink-0" onClick={() => setOpen(true)}>
+                                    <Plus className="size-4" />
+                                    Tambah Menu
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Content row: menu grid + cart panel side by side */}
+                    <div className="min-h-0 flex-1 overflow-y-auto">
+                        <TabsContent value="all">
+                            {filteredMenus.length === 0 ? (
                                 <EmptyState
                                     icon={NoData}
-                                    label={`Menu ${cat.label} belum tersedia`}
-                                    message={`Menu dengan kategori ${cat.label} belum tersedia`}
+                                    label={isSearching ? `Tidak ada hasil untuk "${searchQuery}"` : "Menu belum tersedia"}
+                                    message={isSearching ? "Coba gunakan kata kunci yang berbeda" : "Tambahkan menu pertama melalui tombol tambah menu"}
                                 />
                             ) : (
-                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 ">
-                                    {filtered.map((menu) => (
-                                        <MenuCard key={menu.id} menu={menu} role={role} />
+                                <div key={cart.isOpen ? 'cols-3' : 'cols-4'} className={gridClass}>
+                                    {filteredMenus.map((menu) => (
+                                        <MenuCard key={menu.id} menu={menu} role={role} onAddToCart={cart.addItem} />
                                     ))}
                                 </div>
                             )}
                         </TabsContent>
-                    )
-                })}
-            </Tabs>
 
-            {role === "OWNER" && <MenuCreateDialog key={open ? "open" : "closed"} open={open} onOpenChange={setOpen} />}
+                        {categories.map((cat) => {
+                            const filtered = menus.filter((menu) => menu.category.includes(cat.value))
+                            return (
+                                <TabsContent key={cat.value} value={cat.value}>
+                                    {filtered.length === 0 ? (
+                                        <EmptyState
+                                            icon={NoData}
+                                            label={`Menu ${cat.label} belum tersedia`}
+                                            message={`Menu dengan kategori ${cat.label} belum tersedia`}
+                                        />
+                                    ) : (
+                                        <div key={cart.isOpen ? 'cols-3' : 'cols-4'} className={gridClass}>
+                                            {filtered.map((menu) => (
+                                                <MenuCard key={menu.id} menu={menu} role={role} onAddToCart={cart.addItem} />
+                                            ))}
+                                        </div>
+                                    )}
+                                </TabsContent>
+                            )
+                        })}
+                    </div>
+
+                </Tabs>
+            </div>
+
+            {/* Cart Panel — sejajar dengan grid menu, bukan dengan header */}
+            <MenuCartPanel
+                items={cart.items}
+                totalItems={cart.totalItems}
+                totalPrice={cart.totalPrice}
+                isOpen={cart.isOpen}
+                onIncrement={cart.incrementQty}
+                onDecrement={cart.decrementQty}
+                onRemove={cart.removeItem}
+                onClear={cart.clearCart}
+                onCheckout={() => setCheckoutOpen(true)}
+            />
+
+            {role === "OWNER" && <MenuCreateDialog key={open ? "create-open" : "create-closed"} open={open} onOpenChange={setOpen} />}
+
+            <MenuCheckoutDialog
+                key={checkoutOpen ? "checkout-open" : "checkout-closed"}
+                open={checkoutOpen}
+                onOpenChange={setCheckoutOpen}
+                items={cart.items}
+                totalPrice={cart.totalPrice}
+                onSuccess={() => { cart.clearCart(); setCheckoutOpen(false) }}
+            />
         </div>
     )
 }

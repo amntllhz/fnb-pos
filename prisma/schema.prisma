@@ -58,15 +58,26 @@ model Menu {
   items     OrderItem[]
 }
 
+enum OrderStatus {
+  COMPLETED
+  CANCELLED
+}
+
 model Order {
   id            String        @id @default(uuid())
+  orderDate     DateTime      @db.Date
+  orderNumber   Int
   cashier       User          @relation(fields: [cashierId], references: [id])
   cashierId     String
   total         Int
   paymentMethod PaymentMethod
+  amountPaid    Int?
+  status        OrderStatus   @default(COMPLETED)
+  cancelledAt   DateTime?
   items         OrderItem[]
   createdAt     DateTime      @default(now())
 
+  @@unique([orderDate, orderNumber])
   @@index([createdAt])
 }
 

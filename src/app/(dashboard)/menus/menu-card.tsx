@@ -7,7 +7,7 @@ import {
     AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Package, Pencil, Trash2 } from "lucide-react"
+import { Package, Pencil, Plus, Trash2 } from "lucide-react"
 import { MenuEditDialog } from "./menu-edit-dialog"
 import { categories } from "@/lib/constants"
 import { Fragment } from "react"
@@ -17,7 +17,7 @@ import Delete from "@/assets/delete.svg"
 
 type Menu = { id: string; name: string; price: number; imageUrl: string | null; category: string[] }
 
-export function MenuCard({ menu, role }: { menu: Menu, role?: string }) {
+export function MenuCard({ menu, role, onAddToCart }: { menu: Menu, role?: string, onAddToCart?: (menu: Menu) => void }) {
     const [editOpen, setEditOpen] = useState(false)
     const { handleDelete, isDeleting } = useDeleteMenu()
     const isOwner = role === "OWNER"
@@ -79,8 +79,16 @@ export function MenuCard({ menu, role }: { menu: Menu, role?: string }) {
                     </div>
                 )}
             </div>
-            <CardContent className="items-center pt-1.5 pb-1 px-2">
-                <p className="text-xs font-semibold text-foreground">Rp {menu.price.toLocaleString("id-ID")}</p>
+            <CardContent className="flex items-center justify-between pt-1.5 pb-1 px-2 gap-2">
+                <p className="text-xs font-semibold text-foreground truncate">Rp {menu.price.toLocaleString("id-ID")}</p>
+                <Button
+                    size="xs"
+                    className="flex shrink-0 bg-prim hover:bg-prim-dark text-white"
+                    onClick={() => onAddToCart?.(menu)}
+                    aria-label={`Tambah ${menu.name} ke keranjang`}
+                >
+                    <Plus className="size-3" />
+                </Button>
             </CardContent>
             {
                 isOwner && (
