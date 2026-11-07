@@ -103,8 +103,17 @@ export async function deleteMenu(id: string) {
     if (!session) throw new Error('Belum login')
     if (session.user.role !== 'OWNER') throw new Error('Cuma owner yang bisa hapus produk')
 
+    const orderCount = await prisma.orderItem.count({ where: { menuId: id } })
+
+    if (orderCount > 0) {
+        await prisma.menu.update({ where: { id }, data: { isActive: false } })
+        revalidatePath('/menus')
+        return { mode: 'archived' as const }
+    }
+
     const menu = await prisma.menu.delete({ where: { id } })
     await deleteImageFile(menu.imageUrl)
 
     revalidatePath('/menus')
+    return { mode: 'deleted' as const }
 }

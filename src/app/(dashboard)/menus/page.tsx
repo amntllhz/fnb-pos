@@ -5,7 +5,14 @@ import { MenuList } from "./menu-list"
 
 export default async function MenusPage() {
     const session = await auth.api.getSession({ headers: await headers() })
-    const menus = await prisma.menu.findMany({ orderBy: { createdAt: "desc" } })
 
-    return <MenuList menus={menus as any} role={session?.user.role} />
+    const rows = await prisma.menu.findMany({
+        where: { isActive: true },
+        orderBy: { createdAt: "desc" },
+        include: { _count: { select: { items: true } } },
+    })
+
+    const menus = rows.map(({ _count, ...menu }) => ({ ...menu, orderCount: _count.items }))
+
+    return <MenuList menus={menus} role={session?.user.role} />
 }

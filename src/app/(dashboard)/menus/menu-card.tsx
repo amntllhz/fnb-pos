@@ -13,21 +13,20 @@ import { categories } from "@/lib/constants"
 import { Fragment } from "react"
 import { useDeleteMenu } from "./use-menu-delete"
 import Delete from "@/assets/delete.svg"
+import { MenuListItem } from "./types"
 
-
-type Menu = { id: string; name: string; price: number; imageUrl: string | null; category: string[] }
-
-export function MenuCard({ menu, role, onAddToCart }: { menu: Menu, role?: string, onAddToCart?: (menu: Menu) => void }) {
+export function MenuCard({ menu, role, onAddToCart }: { menu: MenuListItem, role?: string, onAddToCart?: (menu: MenuListItem) => void }) {
     const [editOpen, setEditOpen] = useState(false)
     const { handleDelete, isDeleting } = useDeleteMenu()
     const isOwner = role === "OWNER"
+    const willArchive = menu.orderCount > 0
 
     return (
         <Card className="overflow-hidden p-1 rounded-xl gap-0">
             <div className="relative w-full bg-neutral-100 ring ring-inset ring-neutral-200 rounded-lg">
                 {menu.imageUrl ? (
                     <div className="rounded-lg ring ring-neutral-200 overflow-hidden">
-                        <Image src={menu.imageUrl} alt={menu.name} width={440} height={0} className="object-cover w-full h-40" />
+                        <Image src={menu.imageUrl} alt={menu.name} width={440} height={0} className="object-cover w-full h-40" loading="eager" />
                     </div>
                 ) : (
                     <div className="flex h-40 w-full items-center justify-center">
@@ -55,7 +54,7 @@ export function MenuCard({ menu, role, onAddToCart }: { menu: Menu, role?: strin
                         </Button>
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                                <Button size="icon-sm" variant="destructive">
+                                <Button size="icon-sm" variant="destructive" aria-label={willArchive ? 'Arsipkan menu' : 'Hapus menu'}>
                                     <Trash2 className="size-3.5" />
                                 </Button>
                             </AlertDialogTrigger>
@@ -64,13 +63,17 @@ export function MenuCard({ menu, role, onAddToCart }: { menu: Menu, role?: strin
                                     <Image src={Delete} alt="Logout" className="w-full h-28" />
                                     <div className="space-y-1">
                                         <p className="px-5 font-semibold text-center text-xs text-gray-800">Yakin ingin menghapus?</p>
-                                        <p className='text-[11px] text-gray-400 text-center'>Menu ini akan dihapus dari daftar</p>
+                                        <p className='text-[11px] text-gray-400 text-center max-w-60'>
+                                            {willArchive
+                                                ? 'Menu ini hanya akan disembunyikan dari katalog kasir karena sudah pernah dipesan.'
+                                                : 'Tindakan ini tidak bisa dibatalkan. Menu akan dihapus dari daftar.'}
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex w-full justify-center items-center gap-3 mt-2">
                                     <AlertDialogCancel className="flex-1 text-xs">Batal</AlertDialogCancel>
                                     <AlertDialogAction className="flex-1 text-xs bg-prim! hover:bg-prim-dark!" onClick={() => handleDelete(menu)} disabled={isDeleting}>
-                                        {isDeleting ? "Menghapus..." : "Hapus"}
+                                        {isDeleting ? 'Memproses...' : willArchive ? 'Arsipkan' : 'Hapus'}
                                     </AlertDialogAction>
                                 </div>
                             </AlertDialogContent>
@@ -83,7 +86,7 @@ export function MenuCard({ menu, role, onAddToCart }: { menu: Menu, role?: strin
                 <p className="text-xs font-semibold text-foreground truncate">Rp {menu.price.toLocaleString("id-ID")}</p>
                 <Button
                     size="xs"
-                    className="flex shrink-0 bg-prim hover:bg-prim-dark text-white"
+                    className="flex shrink-0 bg-prim/10 ring ring-prim/10 hover:bg-prim/20 ring-inset text-prim"
                     onClick={() => onAddToCart?.(menu)}
                     aria-label={`Tambah ${menu.name} ke keranjang`}
                 >

@@ -5,6 +5,8 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@/generated/prisma/client'
 import { orderSchema } from '@/lib/order-schema'
+import { DEFAULT_STORE_NAME } from '@/lib/constants'
+import type { ReceiptData } from '@/lib/receipt'
 
 // Tanggal bisnis dihitung di zona WIB, bukan jam server (Vercel = UTC)
 function getBusinessDate() {
@@ -31,7 +33,7 @@ export async function createOrder(input: unknown) {
 
     // 4. Ambil harga ASLI dari database
     const menus = await prisma.menu.findMany({
-        where: { id: { in: menuIds } },
+        where: { id: { in: menuIds }, isActive: true },
         select: { id: true, price: true },
     })
     if (menus.length !== menuIds.length) {
@@ -72,18 +74,32 @@ export async function createOrder(input: unknown) {
                     amountPaid: paid,
                     items: { create: lines },
                 },
-                select: { id: true, orderNumber: true, total: true, amountPaid: true },
+                select: {
+                    orderNumber: true,
+                    createdAt: true,
+                    total: true,
+                    paymentMethod: true,
+                    amountPaid: true,
+                    cashier: { select: { name: true } },
+                    items: { select: { quantity: true, price: true, menu: { select: { name: true } } } },
+                },
             })
         })
 
-        return {
-            success: true as const,
-            error: null,
-            order: {
-                ...order,
-                change: order.amountPaid !== null ? order.amountPaid - order.total : null,
-            },
+        const receipt: ReceiptData = {
+            orderNumber: order.orderNumber,
+            createdAt: order.createdAt.toISOString(),
+            cashierName: order.cashier.name,
+            paymentMethod: order.paymentMethod,
+            items: order.items.map((i) => ({ name: i.menu.name, quantity: i.quantity, price: i.price })),
+            total: order.total,
+            amountPaid: order.amountPaid,
+            change: order.amountPaid !== null ? order.amountPaid - order.total : null,
+            store: await getStoreInfo(),
         }
+
+        return { success: true as const, error: null, receipt }
+
     } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
             return { success: false as const, error: 'Nomor transaksi bentrok. Tekan Bayar sekali lagi.' }
@@ -91,4 +107,16 @@ export async function createOrder(input: unknown) {
         console.error('createOrder gagal:', e)
         return { success: false as const, error: 'Gagal menyimpan transaksi. Coba lagi.' }
     }
+}
+
+async function getStoreInfo() {
+    try {
+        const store = await prisma.storeSetting.findFirst({
+            select: { name: true, address: true, phone: true },
+        })
+        if (store) return store
+    } catch (e) {
+        console.error('Gagal membaca StoreSetting:', e)
+    }
+    return { name: DEFAULT_STORE_NAME, address: null, phone: null }
 }

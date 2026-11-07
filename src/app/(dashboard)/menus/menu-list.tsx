@@ -16,10 +16,9 @@ import { useMenuCart } from "./use-menu-cart"
 import { MenuCartPanel } from "./menu-cart-panel"
 import { MenuCheckoutDialog } from "./menu-checkout-dialog"
 import { cn } from "cn"
+import { MenuListItem } from "./types"
 
-type Product = { id: string; name: string; price: number; imageUrl: string | null; category: string[] }
-
-export function MenuList({ menus, role }: { menus: Product[]; role?: string }) {
+export function MenuList({ menus, role }: { menus: MenuListItem[]; role?: string }) {
     const [open, setOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
     const [activeTab, setActiveTab] = useState("all")
@@ -67,7 +66,7 @@ export function MenuList({ menus, role }: { menus: Product[]; role?: string }) {
                     <p className="text-xs text-neutral-400">Lakukan pengelolaan pesanan dan menu melalui halaman ini</p>
                 </div>
 
-                <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-2 mt-6">
+                <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-2 mt-3">
 
                     <div className="flex items-center justify-between gap-3">
                         <TabsList className="shrink-0">
@@ -113,7 +112,7 @@ export function MenuList({ menus, role }: { menus: Product[]; role?: string }) {
                     </div>
 
                     {/* Content row: menu grid + cart panel side by side */}
-                    <div className="min-h-0 flex-1 overflow-y-auto">
+                    <div className="min-h-0 flex-1 overflow-y-auto p-px">
                         <TabsContent value="all">
                             {filteredMenus.length === 0 ? (
                                 <EmptyState
@@ -176,7 +175,7 @@ export function MenuList({ menus, role }: { menus: Product[]; role?: string }) {
                 onOpenChange={setCheckoutOpen}
                 items={cart.items}
                 totalPrice={cart.totalPrice}
-                onSuccess={() => { cart.clearCart(); setCheckoutOpen(false) }}
+                onSuccess={cart.clearCart}
             />
         </div>
     )

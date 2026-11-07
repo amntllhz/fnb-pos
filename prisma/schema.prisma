@@ -54,6 +54,7 @@ model Menu {
   price     Int
   imageUrl  String?
   category  Category[]
+  isActive  Boolean     @default(true)
   createdAt DateTime    @default(now())
   items     OrderItem[]
 }
