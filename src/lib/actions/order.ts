@@ -7,12 +7,8 @@ import { Prisma } from '@/generated/prisma/client'
 import { orderSchema } from '@/lib/order-schema'
 import { DEFAULT_STORE_NAME } from '@/lib/constants'
 import type { ReceiptData } from '@/lib/receipt'
-
-// Tanggal bisnis dihitung di zona WIB, bukan jam server (Vercel = UTC)
-function getBusinessDate() {
-    const ymd = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(new Date())
-    return new Date(`${ymd}T00:00:00.000Z`)
-}
+import { getBusinessDate } from '@/lib/business-date'
+import { receiptSelect, toReceipt } from '@/lib/queries/receipt'
 
 export async function createOrder(input: unknown) {
     // 1. Harus login (kasir dan owner sama-sama boleh bikin transaksi)
@@ -74,31 +70,11 @@ export async function createOrder(input: unknown) {
                     amountPaid: paid,
                     items: { create: lines },
                 },
-                select: {
-                    orderNumber: true,
-                    createdAt: true,
-                    total: true,
-                    paymentMethod: true,
-                    amountPaid: true,
-                    cashier: { select: { name: true } },
-                    items: { select: { quantity: true, price: true, menu: { select: { name: true } } } },
-                },
+                select: receiptSelect,
             })
         })
 
-        const receipt: ReceiptData = {
-            orderNumber: order.orderNumber,
-            createdAt: order.createdAt.toISOString(),
-            cashierName: order.cashier.name,
-            paymentMethod: order.paymentMethod,
-            items: order.items.map((i) => ({ name: i.menu.name, quantity: i.quantity, price: i.price })),
-            total: order.total,
-            amountPaid: order.amountPaid,
-            change: order.amountPaid !== null ? order.amountPaid - order.total : null,
-            store: await getStoreInfo(),
-        }
-
-        return { success: true as const, error: null, receipt }
+        return { success: true as const, error: null, receipt: await toReceipt(order) }
 
     } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
@@ -109,14 +85,29 @@ export async function createOrder(input: unknown) {
     }
 }
 
-async function getStoreInfo() {
-    try {
-        const store = await prisma.storeSetting.findFirst({
-            select: { name: true, address: true, phone: true },
-        })
-        if (store) return store
-    } catch (e) {
-        console.error('Gagal membaca StoreSetting:', e)
+
+export async function getReceipt(orderId: unknown) {
+    // 1. Harus login
+    const session = await auth.api.getSession({ headers: await headers() })
+    if (!session) return { success: false as const, error: 'Belum login' }
+
+    if (typeof orderId !== 'string') {
+        return { success: false as const, error: 'Transaksi tidak ditemukan' }
     }
-    return { name: DEFAULT_STORE_NAME, address: null, phone: null }
+
+    // 2. Akses dicek di query, aturannya sama dengan getHistory:
+    //    owner boleh semua, kasir hanya transaksinya sendiri hari ini
+    const isOwner = session.user.role === 'OWNER'
+    const order = await prisma.order.findFirst({
+        where: {
+            id: orderId,
+            ...(isOwner ? {} : { cashierId: session.user.id, orderDate: getBusinessDate() }),
+        },
+        select: receiptSelect,
+    })
+
+    // Sengaja satu pesan untuk "tidak ada" dan "bukan hakmu", supaya id order tidak bisa ditebak
+    if (!order) return { success: false as const, error: 'Transaksi tidak ditemukan' }
+
+    return { success: true as const, error: null, receipt: await toReceipt(order) }
 }

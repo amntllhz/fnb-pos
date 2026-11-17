@@ -1,4 +1,4 @@
-import type { PaymentMethod } from "./order-schema"
+import type { OrderStatus, PaymentMethod } from "./order-schema"
 
 export const categories = [
     { value: 'PEDAS', label: 'Pedas' },
@@ -12,6 +12,11 @@ export const paymentMethodLabels: Record<PaymentMethod, string> = {
     EWALLET: "E-Wallet",
     BANK_TRANSFER: "Transfer",
     QRIS: "QRIS",
+}
+
+export const orderStatusLabels: Record<OrderStatus, string> = {
+    COMPLETED: "Selesai",
+    CANCELLED: "Dibatalkan",
 }
 
 export type Category = (typeof categories)[number]

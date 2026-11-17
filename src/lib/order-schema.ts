@@ -3,6 +3,8 @@ import { z } from "zod"
 export const MAX_ITEM_QTY = 99
 export const PAYMENT_METHODS = ["CASH", "EWALLET", "BANK_TRANSFER", "QRIS"] as const
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number]
+export const ORDER_STATUSES = ["COMPLETED", "CANCELLED"] as const
+export type OrderStatus = (typeof ORDER_STATUSES)[number]
 
 export const orderSchema = z.object({
     items: z
