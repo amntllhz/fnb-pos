@@ -111,3 +111,26 @@ export async function getReceipt(orderId: unknown) {
 
     return { success: true as const, error: null, receipt: await toReceipt(order) }
 }
+
+export async function voidOrder(orderId: unknown) {
+    // 1. Harus login dan harus owner (dicek di server, bukan cuma disembunyikan di UI)
+    const session = await auth.api.getSession({ headers: await headers() })
+    if (!session) return { success: false as const, error: 'Belum login' }
+    if (session.user.role !== 'OWNER') {
+        return { success: false as const, error: 'Hanya owner yang bisa membatalkan transaksi' }
+    }
+    if (typeof orderId !== 'string') {
+        return { success: false as const, error: 'Transaksi tidak ditemukan' }
+    }
+
+    // 2. Satu update atomik: hanya order COMPLETED yang bisa di-void, jadi tidak bisa dua kali
+    const { count } = await prisma.order.updateMany({
+        where: { id: orderId, status: 'COMPLETED' },
+        data: { status: 'CANCELLED', cancelledAt: new Date() },
+    })
+    if (count === 0) {
+        return { success: false as const, error: 'Transaksi tidak ditemukan atau sudah dibatalkan' }
+    }
+
+    return { success: true as const, error: null }
+}

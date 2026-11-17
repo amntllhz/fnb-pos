@@ -51,7 +51,7 @@ export function HistoryList({ result, role }: { result: HistoryResult; role?: st
                 </>
             )}
 
-            <HistoryDetailDialog row={selected} onClose={() => setSelected(null)} />
+            <HistoryDetailDialog row={selected} isOwner={isOwner} onClose={() => setSelected(null)} />
         </div>
     )
 }
