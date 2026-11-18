@@ -55,7 +55,7 @@ export function DynamicBreadcrumb() {
                                             <BreadcrumbPage>{formattedSegment}</BreadcrumbPage>
                                         ) : (
                                             // Segmen sebelumnya berupa link
-                                            <BreadcrumbLink>
+                                            <BreadcrumbLink asChild>
                                                 <Link href={href}>{formattedSegment}</Link>
                                             </BreadcrumbLink>
                                         )}

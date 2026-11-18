@@ -49,14 +49,15 @@ enum PaymentMethod {
 }
 
 model Menu {
-  id        String      @id @default(uuid())
-  name      String
-  price     Int
-  imageUrl  String?
-  category  Category[]
-  isActive  Boolean     @default(true)
-  createdAt DateTime    @default(now())
-  items     OrderItem[]
+  id          String      @id @default(uuid())
+  name        String
+  price       Int
+  imageUrl    String?
+  category    Category[]
+  isActive    Boolean     @default(true)
+  isAvailable Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  items       OrderItem[]
 }
 
 enum OrderStatus {

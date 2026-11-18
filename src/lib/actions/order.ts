@@ -29,7 +29,7 @@ export async function createOrder(input: unknown) {
 
     // 4. Ambil harga ASLI dari database
     const menus = await prisma.menu.findMany({
-        where: { id: { in: menuIds }, isActive: true },
+        where: { id: { in: menuIds }, isActive: true, isAvailable: true },
         select: { id: true, price: true },
     })
     if (menus.length !== menuIds.length) {

@@ -117,3 +117,26 @@ export async function deleteMenu(id: string) {
     revalidatePath('/menus')
     return { mode: 'deleted' as const }
 }
+
+// Tempel di bawah deleteMenu di src/lib/actions/menu.ts (import yang dibutuhkan sudah ada di file itu)
+
+export async function setMenuAvailability(menuId: unknown, isAvailable: unknown) {
+    // Owner dan kasir sama-sama boleh mengubah ketersediaan, CRUD menu tetap khusus owner
+    const session = await auth.api.getSession({ headers: await headers() })
+    if (!session) return { success: false as const, error: 'Belum login' }
+
+    if (typeof menuId !== 'string' || typeof isAvailable !== 'boolean') {
+        return { success: false as const, error: 'Data tidak valid' }
+    }
+
+    // Menu yang diarsip (isActive false) tidak perlu diatur ketersediaannya
+    const { count } = await prisma.menu.updateMany({
+        where: { id: menuId, isActive: true },
+        data: { isAvailable },
+    })
+    if (count === 0) return { success: false as const, error: 'Menu tidak ditemukan' }
+
+    revalidatePath('/menus')
+    revalidatePath('/menus/manage')
+    return { success: true as const, error: null }
+}

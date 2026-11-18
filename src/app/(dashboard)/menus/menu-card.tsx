@@ -26,7 +26,7 @@ export function MenuCard({ menu, role, onAddToCart }: { menu: MenuListItem, role
             <div className="relative w-full bg-neutral-100 ring ring-inset ring-neutral-200 rounded-lg">
                 {menu.imageUrl ? (
                     <div className="rounded-lg ring ring-neutral-200 overflow-hidden">
-                        <Image src={menu.imageUrl} alt={menu.name} width={440} height={0} className="object-cover w-full h-40" loading="eager" />
+                        <Image src={menu.imageUrl} alt={menu.name} width={440} height={0} className={`object-cover w-full h-40 ${menu.isAvailable ? "" : "grayscale"}`} loading="eager" />
                     </div>
                 ) : (
                     <div className="flex h-40 w-full items-center justify-center">
@@ -81,11 +81,15 @@ export function MenuCard({ menu, role, onAddToCart }: { menu: MenuListItem, role
 
                     </div>
                 )}
+                {!menu.isAvailable && (
+                    <span className="absolute bottom-2 left-2.5 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white">Habis</span>
+                )}
             </div>
             <CardContent className="flex items-center justify-between pt-1.5 pb-1 px-2 gap-2">
                 <p className="text-xs font-semibold text-foreground truncate">Rp {menu.price.toLocaleString("id-ID")}</p>
                 <Button
                     size="xs"
+                    disabled={!menu.isAvailable}
                     className="flex shrink-0 bg-prim/10 ring ring-prim/10 hover:bg-prim/20 ring-inset text-prim"
                     onClick={() => onAddToCart?.(menu)}
                     aria-label={`Tambah ${menu.name} ke keranjang`}

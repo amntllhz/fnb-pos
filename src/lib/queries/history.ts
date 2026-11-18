@@ -6,7 +6,7 @@ import type { HistoryParams } from "@/lib/history-schema"
 type Viewer = { id: string; role?: string | null }
 
 /** Rentang tanggal efektif. Kasir selalu dikunci ke hari ini, apa pun isi URL-nya. */
-function resolveRange(params: HistoryParams, isOwner: boolean) {
+export function resolveRange(params: HistoryParams, isOwner: boolean) {
     const today = getBusinessDate()
     if (!isOwner) return { from: today, to: today }
 
