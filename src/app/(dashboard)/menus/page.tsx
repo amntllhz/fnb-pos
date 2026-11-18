@@ -8,7 +8,7 @@ export default async function MenusPage() {
 
     const rows = await prisma.menu.findMany({
         where: { isActive: true },
-        orderBy: { createdAt: "desc" },
+        orderBy: [{ isAvailable: "desc" }, { createdAt: "desc" }],
         include: { _count: { select: { items: true } } },
     })
 
