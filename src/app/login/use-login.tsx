@@ -38,7 +38,7 @@ export function useLogin() {
             toast.success('Login Berhasil', {
                 description: 'Selamat Datang kembali di sistem',
             })
-            router.push('/menus')
+            router.push('/dashboard')
             router.refresh()
         })
     }
