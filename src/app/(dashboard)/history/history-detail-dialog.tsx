@@ -107,7 +107,7 @@ function DetailBody({ row, isOwner, onClose }: { row: HistoryRow; isOwner: boole
                         Cetak Ulang
                     </Button>
 
-                    {isOwner && (
+                    {isOwner && row.canVoid && (
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
                                 <Button type="button" variant="destructive" className="flex-1 text-xs" disabled={isVoiding}>

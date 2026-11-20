@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { getBusinessDate } from "@/lib/business-date"
 import { DAY, getSalesSummary, percentChange, previousRange } from "@/lib/queries/summary"
+import { CLOSE_HOUR, OPEN_HOUR } from "@/lib/business-hours"
 
 export const DASHBOARD_PRESETS = ["today", "yesterday", "7d"] as const
 export type DashboardPreset = (typeof DASHBOARD_PRESETS)[number]
@@ -12,9 +13,7 @@ export function parsePreset(value: string | undefined): DashboardPreset {
 
 type Viewer = { role?: string | null }
 
-// Jam buka usaha: 10.00 sampai 20.00. Grafik per jam selalu menampilkan rentang ini.
-const OPEN_HOUR = 10
-const CLOSE_HOUR = 20
+
 const COMPARE_LABEL: Record<DashboardPreset, string> = {
     today: "kemarin",
     yesterday: "hari sebelumnya",

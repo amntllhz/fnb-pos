@@ -1,11 +1,11 @@
 import { auth } from "@/lib/auth"
-import { dateToYmd } from "@/lib/business-date"
+import { parseYmd, dateToYmd } from "@/lib/business-date"
 import { orderStatusLabels, paymentMethodLabels } from "@/lib/constants"
 import { toCsv } from "@/lib/csv"
 import { formatOrderNumber } from "@/lib/format"
-import { parseHistoryParams } from "@/lib/history-schema"
 import { prisma } from "@/lib/prisma"
-import { resolveReportRange } from "@/lib/queries/report"
+import { getBusinessNow } from "@/lib/business-now"
+import { resolveExport } from "@/lib/export-period"
 
 // Waktu ditulis menurut WIB, sama dengan yang dilihat di aplikasi
 const TIME_ZONE = "Asia/Jakarta"
@@ -32,12 +32,18 @@ export async function GET(request: Request) {
     if (session.user.role !== "OWNER") return new Response("Hanya owner yang bisa mengekspor data", { status: 403 })
 
     // Rentang diselesaikan oleh fungsi yang sama dengan halaman Laporan, jadi isi file = yang tampil di layar
-    const params = parseHistoryParams(Object.fromEntries(new URL(request.url).searchParams))
-    const range = resolveReportRange(params)
+    const search = new URL(request.url).searchParams
+    const period = resolveExport(
+        { date: search.get("date") ?? undefined, month: search.get("month") ?? undefined },
+        getBusinessNow()
+    )
+    if (!period.ok) return new Response(period.error, { status: 400 })
+    const from = parseYmd(period.from)!
+    const to = parseYmd(period.to)!
 
     // Semua transaksi, termasuk yang dibatalkan, supaya file bisa dipakai untuk audit
     const orders = await prisma.order.findMany({
-        where: { orderDate: { gte: range.from, lte: range.to } },
+        where: { orderDate: { gte: from, lte: to } },
         orderBy: [{ orderDate: "asc" }, { orderNumber: "asc" }],
         select: {
             orderDate: true,
@@ -70,7 +76,7 @@ export async function GET(request: Request) {
         ]),
     ])
 
-    const filename = `penjualan_${dateToYmd(range.from)}_${dateToYmd(range.to)}.csv`
+    const filename = `penjualan_${period.name}.csv`
     return new Response(csv, {
         headers: {
             "Content-Type": "text/csv; charset=utf-8",

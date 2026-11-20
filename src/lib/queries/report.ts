@@ -3,6 +3,8 @@ import { dateToYmd, getBusinessDate } from "@/lib/business-date"
 import type { HistoryParams } from "@/lib/history-schema"
 import { resolveRange } from "@/lib/queries/history"
 import { DAY, getSalesSummary, percentChange, previousRange } from "@/lib/queries/summary"
+import { getBusinessNow } from "@/lib/business-now"
+import { getExportOptions } from "@/lib/export-period"
 
 /** Satu-satunya tempat rentang Laporan ditentukan, juga dipakai export. Tanpa rentang di URL, default 7 hari terakhir. */
 export function resolveReportRange(params: HistoryParams) {
@@ -110,6 +112,7 @@ export async function getReport(params: HistoryParams) {
         })),
         byMenu,
         byCashier,
+        exportOptions: getExportOptions(getBusinessNow()),
     }
 }
 

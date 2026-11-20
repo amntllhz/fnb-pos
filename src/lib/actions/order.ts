@@ -9,6 +9,9 @@ import { DEFAULT_STORE_NAME } from '@/lib/constants'
 import type { ReceiptData } from '@/lib/receipt'
 import { getBusinessDate } from '@/lib/business-date'
 import { receiptSelect, toReceipt } from '@/lib/queries/receipt'
+import { CLOSE_HOUR } from '@/lib/business-hours'
+import { getBusinessNow } from '@/lib/business-now'
+import { isFinalDay } from '@/lib/export-period'
 
 export async function createOrder(input: unknown) {
     // 1. Harus login (kasir dan owner sama-sama boleh bikin transaksi)
@@ -101,7 +104,7 @@ export async function getReceipt(orderId: unknown) {
     const order = await prisma.order.findFirst({
         where: {
             id: orderId,
-            ...(isOwner ? {} : { cashierId: session.user.id, orderDate: getBusinessDate() }),
+            ...(isOwner ? {} : { orderDate: getBusinessDate() }),
         },
         select: receiptSelect,
     })
@@ -123,13 +126,18 @@ export async function voidOrder(orderId: unknown) {
         return { success: false as const, error: 'Transaksi tidak ditemukan' }
     }
 
+    const now = getBusinessNow()
+    if (isFinalDay(now.todayYmd, now)) {
+        return { success: false as const, error: `Penjualan sudah ditutup setelah jam ${CLOSE_HOUR}.00, transaksi tidak bisa dibatalkan` }
+    }
+
     // 2. Satu update atomik: hanya order COMPLETED yang bisa di-void, jadi tidak bisa dua kali
     const { count } = await prisma.order.updateMany({
-        where: { id: orderId, status: 'COMPLETED' },
+        where: { id: orderId, status: 'COMPLETED', orderDate: getBusinessDate() },
         data: { status: 'CANCELLED', cancelledAt: new Date() },
     })
     if (count === 0) {
-        return { success: false as const, error: 'Transaksi tidak ditemukan atau sudah dibatalkan' }
+        return { success: false as const, error: 'Transaksi tidak ditemukan, sudah dibatalkan, atau bukan transaksi hari ini' }
     }
 
     return { success: true as const, error: null }

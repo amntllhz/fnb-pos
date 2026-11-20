@@ -3,32 +3,24 @@
 import Link from "next/link"
 import { useState, useTransition } from "react"
 import { usePathname, useRouter } from "next/navigation"
-import { Download } from "lucide-react"
 import type { DateRange } from "react-day-picker"
 import NoData from "@/assets/no-data.svg"
 import { DynamicBreadcrumb } from "@/components/dynamic-breadcrumb"
 import { EmptyState } from "@/components/empty-state"
-import { SimpleBarChart } from "@/components/simple-bar-chart"
 import { Delta, Stat } from "@/components/stat-card"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Spinner } from "@/components/ui/spinner"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { localDateToYmd, ymdToLocalDate } from "@/lib/business-date"
-import { paymentMethodLabels } from "@/lib/constants"
 import { formatRupiah } from "@/lib/format"
 import { toHistoryQuery } from "@/lib/history-url"
-import type { PaymentMethod } from "@/lib/order-schema"
 import type { ReportResult } from "@/lib/queries/report"
 import { cn } from "@/lib/utils"
 import { HistoryDateRangePicker } from "../history/history-date-range-picker"
-
-const COLORS: Record<PaymentMethod, string> = {
-    CASH: "#16a34a",
-    EWALLET: "#2563eb",
-    BANK_TRANSFER: "#f59e0b",
-    QRIS: "#8b5cf6",
-}
+import { ReportExport } from "@/components/report-export"
+import { RevenueBarChart } from "@/components/revenue-bar-chart"
+import { MethodPieChart } from "@/components/method-pie-chart"
 
 const cardClass = "rounded-xl border bg-card p-4"
 const headClass = "h-9 text-xs font-medium text-neutral-400 text-center"
@@ -77,15 +69,8 @@ function DailyChart({ daily }: { daily: ReportResult["daily"] }) {
             <p className="text-xs font-semibold">Tren Penjualan Harian</p>
             <p className="text-[11px] text-neutral-400">Total omzet (Rp) per hari pada periode terpilih. Label di bawah batang adalah tanggal (hari/bulan).</p>
             <div className="mt-4">
-                <SimpleBarChart
-                    ariaLabel="Grafik omzet per hari"
-                    labelEvery={daily.length <= 10 ? 1 : Math.ceil(daily.length / 7)}
-                    bars={daily.map((d) => ({
-                        key: d.date,
-                        label: shortDate(d.date),
-                        value: d.total,
-                        tooltip: `${longDate(d.date)} · ${formatRupiah(d.total)} · ${d.count} transaksi`,
-                    }))}
+                <RevenueBarChart
+                    bars={daily.map((d) => ({ key: d.date, label: shortDate(d.date), value: d.total }))}
                 />
             </div>
             <p className="mt-3 text-[11px] text-neutral-500">
@@ -93,42 +78,6 @@ function DailyChart({ daily }: { daily: ReportResult["daily"] }) {
                 {" · "}
                 {formatRupiah(peak.total)} dari {peak.count} transaksi
             </p>
-        </div>
-    )
-}
-
-// ponytail: pie dari conic-gradient, tanpa library chart. Diganti saat pindah ke evilcharts.
-export function MethodChart({ byMethod, totalSales }: { byMethod: ReportResult["byMethod"]; totalSales: number }) {
-    let acc = 0
-    const stops = byMethod.map((m) => {
-        const start = acc
-        acc += (m.total / totalSales) * 100
-        return `${COLORS[m.method]} ${start}% ${acc}%`
-    })
-
-    return (
-        <div className={cardClass}>
-            <p className="text-xs font-semibold">Metode Pembayaran</p>
-            <div className="mt-4 flex flex-wrap items-center gap-8">
-                <div
-                    role="img"
-                    aria-label="Diagram pembagian metode pembayaran"
-                    className="size-40 rounded-full"
-                    style={{ background: `conic-gradient(${stops.join(", ")})` }}
-                />
-                <ul className="space-y-2 text-xs">
-                    {byMethod.map((m) => (
-                        <li key={m.method} className="flex items-center gap-2">
-                            <span className="size-2.5 rounded-full" style={{ background: COLORS[m.method] }} />
-                            <span className="w-28">{paymentMethodLabels[m.method]}</span>
-                            <span className="font-medium tabular-nums">{formatRupiah(m.total)}</span>
-                            <span className="tabular-nums text-neutral-400">
-                                {Math.round((m.total / totalSales) * 100)}% · {m.count} transaksi
-                            </span>
-                        </li>
-                    ))}
-                </ul>
-            </div>
         </div>
     )
 }
@@ -222,15 +171,8 @@ export function ReportView({ result }: { result: ReportResult }) {
                     >
                         Lihat transaksi di Riwayat
                     </Link>
-                    {/* <a> biasa, bukan Link: tujuannya berkas unduhan, bukan halaman */}
-                    <a
-                        href={`/report/export${toHistoryQuery(result.range)}`}
-                        download
-                        className={cn(buttonVariants({ size: "sm" }), "h-8 bg-prim text-xs hover:bg-prim-dark")}
-                    >
-                        <Download className="mr-1.5 size-3.5" />
-                        Export CSV
-                    </a>
+
+                    <ReportExport options={result.exportOptions} />
                 </div>
             </div>
 
@@ -252,7 +194,7 @@ export function ReportView({ result }: { result: ReportResult }) {
             ) : (
                 <>
                     <DailyChart daily={result.daily} />
-                    <MethodChart byMethod={result.byMethod} totalSales={summary.totalSales} />
+                    <MethodPieChart byMethod={result.byMethod} totalSales={summary.totalSales} />
                     <MenuTable rows={result.byMenu} totalSales={summary.totalSales} />
                 </>
             )}

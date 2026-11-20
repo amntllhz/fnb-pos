@@ -12,7 +12,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { formatRupiah } from "@/lib/format"
 import type { DashboardResult } from "@/lib/queries/dashboard"
 import { cn } from "@/lib/utils"
-import { MethodChart } from "../report/report-view"
+import { RevenueBarChart } from "@/components/revenue-bar-chart"
+import { MethodPieChart } from "@/components/method-pie-chart"
+
 
 const PRESET_LABELS = { today: "Hari Ini", yesterday: "Kemarin", "7d": "7 Hari" } as const
 // Hanya type yang diimpor dari lib/queries/dashboard, supaya Prisma tidak ikut masuk bundle client
@@ -26,24 +28,8 @@ const cardClass = "rounded-xl border bg-card p-4"
 
 const hh = (hour: number) => String(hour).padStart(2, "0")
 
-function compactRupiah(n: number) {
-    if (n >= 1_000_000) return `Rp ${(n / 1_000_000).toFixed(1).replace(".", ",").replace(/,0$/, "")} jt`
-    if (n >= 1_000) return `Rp ${Math.round(n / 1_000)} rb`
-    return `Rp ${n}`
-}
-
-// Pembulatan ke atas ke angka "bulat" (1, 2, 5 x 10^n) supaya skala sumbu Y rapi
-function niceMax(value: number) {
-    const pow = 10 ** Math.floor(Math.log10(value))
-    const n = value / pow
-    return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * pow
-}
-
-const BAR_AREA = 128 // tinggi area batang, px
-
 // ponytail: batang dari div biasa, tanpa library chart
 function HourlyChart({ data }: { data: DashboardResult["byHour"] }) {
-    const top = niceMax(Math.max(...data.map((d) => d.total), 1))
     const peak = data.reduce((a, b) => (b.total > a.total ? b : a))
 
     return (
@@ -53,37 +39,8 @@ function HourlyChart({ data }: { data: DashboardResult["byHour"] }) {
                 Total omzet (Rp) yang masuk tiap jam pada periode ini. Angka di bawah batang adalah jam mulai, 10 berarti 10.00-10.59.
             </p>
 
-            <div role="img" aria-label="Grafik omzet per jam" className="mt-4 flex gap-2">
-                <div
-                    className="flex shrink-0 flex-col justify-between text-right text-[9px] tabular-nums text-neutral-400"
-                    style={{ height: BAR_AREA }}
-                >
-                    <span>{compactRupiah(top)}</span>
-                    <span>{compactRupiah(top / 2)}</span>
-                    <span>0</span>
-                </div>
-
-                <div className="min-w-0 flex-1">
-                    <div className="relative flex items-end gap-1 border-b" style={{ height: BAR_AREA }}>
-                        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 border-t border-dashed" />
-                        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-1/2 border-t border-dashed" />
-                        {data.map((d) => (
-                            <div
-                                key={d.hour}
-                                title={`${hh(d.hour)}.00-${hh(d.hour)}.59 · ${formatRupiah(d.total)} · ${d.count} transaksi`}
-                                className="relative flex-1 rounded-t bg-prim/80"
-                                style={{ height: d.total > 0 ? Math.max(3, Math.round((d.total / top) * BAR_AREA)) : 0 }}
-                            />
-                        ))}
-                    </div>
-                    <div className="mt-1 flex gap-1">
-                        {data.map((d) => (
-                            <span key={d.hour} className="flex-1 text-center text-[9px] tabular-nums text-neutral-400">
-                                {hh(d.hour)}
-                            </span>
-                        ))}
-                    </div>
-                </div>
+            <div className="mt-4">
+                <RevenueBarChart bars={data.map((d) => ({ key: String(d.hour), label: hh(d.hour), value: d.total }))} />
             </div>
 
             {/* Nilai terbaca tanpa hover, penting untuk layar sentuh */}
@@ -152,7 +109,7 @@ function Body({ result }: { result: DashboardResult }) {
                         <MenuRank title="Menu Terlaris" items={result.topMenus} empty="Belum ada menu terjual" />
                         <MenuRank title="Menu Kurang Laku" items={result.lowMenus} empty="Semua menu sedang habis atau belum ada menu" />
                     </div>
-                    <MethodChart byMethod={result.byMethod} totalSales={summary.totalSales} />
+                    <MethodPieChart byMethod={result.byMethod} totalSales={summary.totalSales} />
                 </>
             )}
         </div>

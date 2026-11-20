@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma"
 import type { Prisma } from "@/generated/prisma/client"
 import { dateToYmd, getBusinessDate, parseYmd } from "@/lib/business-date"
 import type { HistoryParams } from "@/lib/history-schema"
+import { getBusinessNow } from "../business-now"
+import { isFinalDay } from "../export-period"
 
 type Viewer = { id: string; role?: string | null }
 
@@ -27,7 +29,6 @@ export async function getHistory(params: HistoryParams, viewer: Viewer) {
 
     const where: Prisma.OrderWhereInput = {
         orderDate: { gte: range.from, lte: range.to },
-        ...(isOwner ? {} : { cashierId: viewer.id }),
         ...(params.method ? { paymentMethod: params.method } : {}),
         ...(params.status ? { status: params.status } : {}),
         ...(orderNumber !== undefined ? { orderNumber } : {}),
@@ -45,6 +46,7 @@ export async function getHistory(params: HistoryParams, viewer: Viewer) {
         take: pageSize,
         select: {
             id: true,
+            orderDate: true,
             orderNumber: true,
             createdAt: true,
             total: true,
@@ -55,9 +57,12 @@ export async function getHistory(params: HistoryParams, viewer: Viewer) {
         },
     })
 
+    const now = getBusinessNow()
+
     return {
         rows: rows.map((o) => ({
             id: o.id,
+            canVoid: o.status === "COMPLETED" && dateToYmd(o.orderDate) === now.todayYmd && !isFinalDay(now.todayYmd, now),
             orderNumber: o.orderNumber,
             createdAt: o.createdAt.toISOString(),
             cashierName: o.cashier.name,
