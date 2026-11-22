@@ -82,14 +82,10 @@ export async function getDashboard(presetParam: DashboardPreset, viewer: Viewer)
     // Terlaris: semua menu yang terjual (termasuk yang sudah diarsip).
     // Kurang laku: hanya menu aktif yang ready, karena menu habis wajar tidak terjual.
     const qty = new Map(sold.map((s) => [s.menuId, s._sum.quantity ?? 0]))
-    const ranked = menus.map((m) => ({ ...m, qty: qty.get(m.id) ?? 0 }))
-    const pick = ({ id, name, qty }: (typeof ranked)[number]) => ({ id, name, qty })
-    const topMenus = ranked.filter((m) => m.qty > 0).sort((a, b) => b.qty - a.qty).slice(0, 5).map(pick)
-    const lowMenus = ranked
-        .filter((m) => m.isActive && m.isAvailable)
-        .sort((a, b) => a.qty - b.qty || a.name.localeCompare(b.name))
-        .slice(0, 5)
-        .map(pick)
+    const menuRanking = menus
+        .map((m) => ({ id: m.id, name: m.name, qty: qty.get(m.id) ?? 0, eligible: m.isActive && m.isAvailable }))
+        .filter((m) => m.qty > 0 || m.eligible)
+        .map(({ id, name, qty }) => ({ id, name, qty }))
 
     return {
         preset,
@@ -106,8 +102,7 @@ export async function getDashboard(presetParam: DashboardPreset, viewer: Viewer)
             total: m._sum.total ?? 0,
             count: m._count._all,
         })),
-        topMenus,
-        lowMenus,
+        menuRanking,
         unavailableCount: menus.filter((m) => m.isActive && !m.isAvailable).length,
     }
 }

@@ -7,7 +7,7 @@ import type { DateRange } from "react-day-picker"
 import NoData from "@/assets/no-data.svg"
 import { DynamicBreadcrumb } from "@/components/dynamic-breadcrumb"
 import { EmptyState } from "@/components/empty-state"
-import { Delta, Stat } from "@/components/stat-card"
+import { Stat } from "@/components/stat-card"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Spinner } from "@/components/ui/spinner"
@@ -66,8 +66,10 @@ function DailyChart({ daily }: { daily: ReportResult["daily"] }) {
 
     return (
         <div className={cardClass}>
-            <p className="text-xs font-semibold">Tren Penjualan Harian</p>
-            <p className="text-[11px] text-neutral-400">Total omzet (Rp) per hari pada periode terpilih. Label di bawah batang adalah tanggal (hari/bulan).</p>
+            <div className="flex flex-col space-y-0.5">
+                <p className="text-xs font-semibold">Tren Penjualan Harian</p>
+                <p className="text-[11px] text-neutral-400">Total omzet (Rp) per hari pada periode terpilih. Label di bawah batang adalah tanggal (hari/bulan).</p>
+            </div>
             <div className="mt-4">
                 <RevenueBarChart
                     bars={daily.map((d) => ({ key: d.date, label: shortDate(d.date), value: d.total }))}
@@ -177,15 +179,9 @@ export function ReportView({ result }: { result: ReportResult }) {
             </div>
 
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                <Stat label="Total Penjualan" value={formatRupiah(summary.totalSales)}>
-                    <Delta value={change.sales} label="periode sebelumnya" />
-                </Stat>
-                <Stat label="Jumlah Transaksi" value={String(summary.orderCount)}>
-                    <Delta value={change.orders} label="periode sebelumnya" />
-                </Stat>
-                <Stat label="Rata-rata per Transaksi" value={formatRupiah(summary.average)}>
-                    <Delta value={change.average} label="periode sebelumnya" />
-                </Stat>
+                <Stat label="Total Penjualan" value={formatRupiah(summary.totalSales)} delta={{ value: change.sales, label: "periode sebelumnya" }} />
+                <Stat label="Jumlah Transaksi" value={String(summary.orderCount)} delta={{ value: change.orders, label: "periode sebelumnya" }} />
+                <Stat label="Rata-rata per Transaksi" value={formatRupiah(summary.average)} delta={{ value: change.average, label: "periode sebelumnya" }} />
                 <Stat label="Dibatalkan" value={String(summary.cancelledCount)} />
             </div>
 

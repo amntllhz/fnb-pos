@@ -15,9 +15,9 @@ const config = {
 export type Bar = { key: string; label: string; value: number }
 
 export function compactRupiah(n: number) {
-    if (n >= 1_000_000) return `Rp ${(n / 1_000_000).toFixed(1).replace(".", ",").replace(/,0$/, "")} jt`
-    if (n >= 1_000) return `Rp ${Math.round(n / 1_000)} rb`
-    return `Rp ${n}`
+    if (n >= 1_000_000) return ` ${(n / 1_000_000).toFixed(1).replace(".", ",").replace(/,0$/, "")} jt`
+    if (n >= 1_000) return ` ${Math.round(n / 1_000)} rb`
+    return ` ${n}`
 }
 
 /** Grafik batang omzet. labelEvery = tampilkan label sumbu X tiap sekian batang. */
@@ -32,7 +32,7 @@ export function RevenueBarChart({ bars }: { bars: Bar[] }) {
                 <EChartsBarChart.YAxis tickFormatter={(value) => compactRupiah(Number(value))} />
                 <EChartsBarChart.Tooltip variant="frosted-glass" />
                 <EChartsBarChart.Bar dataKey="value" />
-                <EChartsBarChart.Legend variant="rounded-square" isClickable />
+                <EChartsBarChart.Legend variant="circle" isClickable />
             </EChartsBarChart>
         </InView>
     )

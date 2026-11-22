@@ -2,11 +2,12 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { useTransition } from "react"
+import { useState, useTransition } from "react"
+import { ArrowDown, ArrowUp } from "lucide-react"
 import NoData from "@/assets/no-data.svg"
 import { DynamicBreadcrumb } from "@/components/dynamic-breadcrumb"
 import { EmptyState } from "@/components/empty-state"
-import { Delta, Stat } from "@/components/stat-card"
+import { Stat } from "@/components/stat-card"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { formatRupiah } from "@/lib/format"
@@ -14,6 +15,7 @@ import type { DashboardResult } from "@/lib/queries/dashboard"
 import { cn } from "@/lib/utils"
 import { RevenueBarChart } from "@/components/revenue-bar-chart"
 import { MethodPieChart } from "@/components/method-pie-chart"
+import { Button } from "@/components/ui/button"
 
 
 const PRESET_LABELS = { today: "Hari Ini", yesterday: "Kemarin", "7d": "7 Hari" } as const
@@ -21,9 +23,7 @@ const PRESET_LABELS = { today: "Hari Ini", yesterday: "Kemarin", "7d": "7 Hari" 
 const PRESETS = Object.keys(PRESET_LABELS) as (keyof typeof PRESET_LABELS)[]
 
 // Gaya sama dengan tabs di menu-list.tsx
-const TRIGGER_CLASS =
-    "text-neutral-400 data-active:font-medium data-active:text-prim px-3 font-normal text-xs transition-all duration-300 ease-in-out hover:text-sidebar-accent-foreground"
-
+const TRIGGER_CLASS = "text-neutral-400 data-active:font-medium data-active:text-prim px-3 font-normal text-xs transition-all duration-300 ease-in-out hover:text-sidebar-accent-foreground"
 const cardClass = "rounded-xl border bg-card p-4"
 
 const hh = (hour: number) => String(hour).padStart(2, "0")
@@ -34,10 +34,12 @@ function HourlyChart({ data }: { data: DashboardResult["byHour"] }) {
 
     return (
         <div className={cardClass}>
-            <p className="text-xs font-semibold">Penjualan per Jam</p>
-            <p className="text-[11px] text-neutral-400">
-                Total omzet (Rp) yang masuk tiap jam pada periode ini. Angka di bawah batang adalah jam mulai, 10 berarti 10.00-10.59.
-            </p>
+            <div className="flex flex-col space-y-0.5">
+                <p className="text-xs font-semibold">Penjualan per Jam</p>
+                <p className="text-[11px] text-neutral-400">
+                    Angka di bawah batang adalah jam mulai ( 10 berarti 10.00-10.59 )
+                </p>
+            </div>
 
             <div className="mt-4">
                 <RevenueBarChart bars={data.map((d) => ({ key: String(d.hour), label: hh(d.hour), value: d.total }))} />
@@ -56,19 +58,69 @@ function HourlyChart({ data }: { data: DashboardResult["byHour"] }) {
     )
 }
 
-function MenuRank({ title, items, empty }: { title: string; items: DashboardResult["topMenus"]; empty: string }) {
+function MenuRanking({ items }: { items: DashboardResult["menuRanking"] }) {
+    const [bestFirst, setBestFirst] = useState(true)
+
+    // ponytail: semua menu sudah ada di props, jadi urutan cukup dihitung di client
+    const sorted = [...items].sort(
+        (a, b) => (bestFirst ? b.qty - a.qty : a.qty - b.qty) || a.name.localeCompare(b.name)
+    )
+
     return (
         <div className={cardClass}>
-            <p className="text-xs font-semibold">{title}</p>
-            {items.length === 0 ? (
-                <p className="mt-3 text-[11px] text-neutral-400">{empty}</p>
+            <div className="flex items-start justify-between gap-2">
+                <div>
+                    <p className="text-xs font-semibold">{bestFirst ? "Menu Terlaris" : "Menu Kurang Laku"}</p>
+                    {items.length > 5 && (
+                        <p className="text-[11px] text-neutral-400">Gulir untuk melihat rank menu</p>
+                    )}
+                </div>
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="icon-sm"
+                    onClick={() => setBestFirst((v) => !v)}
+                    aria-label={bestFirst ? "Urutkan dari yang kurang laku" : "Urutkan dari yang terlaris"}
+                    title={bestFirst ? "Terlaris" : "Kurang laku"}
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="size-3.5"
+                    >
+                        {/* Arrow atas (aktif saat bestFirst === false) */}
+                        <path
+                            d="M7 9L12 4L17 9"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className={!bestFirst ? "text-prim" : "text-muted-foreground/40"}
+                        />
+                        {/* Arrow bawah (default aktif saat bestFirst === true) */}
+                        <path
+                            d="M7 15L12 20L17 15"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className={bestFirst ? "text-prim" : "text-muted-foreground/40"}
+                        />
+                    </svg>
+                </Button>
+            </div>
+
+            {sorted.length === 0 ? (
+                <p className="mt-3 text-[11px] text-neutral-400">Belum ada menu</p>
             ) : (
-                <ol className="mt-3 space-y-2">
-                    {items.map((m, i) => (
-                        <li key={m.id} className="flex items-center gap-2 text-xs">
+                // Tinggi pas 5 baris (5 x h-8 = max-h-40), sisanya bisa digulir
+                <ol className="mt-3 max-h-40 overflow-y-auto pr-1">
+                    {sorted.map((m, i) => (
+                        <li key={m.id} className="flex space-y-3 items-center gap-2 text-xs">
                             <span className="w-4 tabular-nums text-neutral-400">{i + 1}</span>
                             <span className="min-w-0 flex-1 truncate">{m.name}</span>
-                            <span className="font-medium tabular-nums">{m.qty} porsi</span>
+                            <span className="font-medium tabular-nums">{m.qty} pcs</span>
                         </li>
                     ))}
                 </ol>
@@ -83,15 +135,9 @@ function Body({ result }: { result: DashboardResult }) {
     return (
         <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-                <Stat label="Omzet" value={formatRupiah(summary.totalSales)}>
-                    <Delta value={change.sales} label={compareLabel} />
-                </Stat>
-                <Stat label="Transaksi" value={String(summary.orderCount)}>
-                    <Delta value={change.orders} label={compareLabel} />
-                </Stat>
-                <Stat label="Rata-rata per Transaksi" value={formatRupiah(summary.average)}>
-                    <Delta value={change.average} label={compareLabel} />
-                </Stat>
+                <Stat label="Omzet" value={formatRupiah(summary.totalSales)} delta={{ value: change.sales, label: compareLabel }} />
+                <Stat label="Transaksi" value={String(summary.orderCount)} delta={{ value: change.orders, label: compareLabel }} />
+                <Stat label="Rata-rata per Transaksi" value={formatRupiah(summary.average)} delta={{ value: change.average, label: compareLabel }} />
                 <Stat label="Dibatalkan" value={String(summary.cancelledCount)} />
                 <Link href="/menus/manage" className="transition-colors hover:bg-neutral-50 rounded-xl">
                     <Stat label="Menu Habis" value={String(result.unavailableCount)}>
@@ -105,14 +151,14 @@ function Body({ result }: { result: DashboardResult }) {
             ) : (
                 <>
                     <HourlyChart data={result.byHour} />
-                    <div className="grid gap-4 lg:grid-cols-2">
-                        <MenuRank title="Menu Terlaris" items={result.topMenus} empty="Belum ada menu terjual" />
-                        <MenuRank title="Menu Kurang Laku" items={result.lowMenus} empty="Semua menu sedang habis atau belum ada menu" />
+                    <div className="grid gap-4 lg:grid-cols-3">
+                        <MethodPieChart byMethod={result.byMethod} totalSales={summary.totalSales} />
+                        <MenuRanking items={result.menuRanking} />
                     </div>
-                    <MethodPieChart byMethod={result.byMethod} totalSales={summary.totalSales} />
                 </>
-            )}
-        </div>
+            )
+            }
+        </div >
     )
 }
 
