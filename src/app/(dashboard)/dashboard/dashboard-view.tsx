@@ -42,11 +42,16 @@ function HourlyChart({ data }: { data: DashboardResult["byHour"] }) {
             </div>
 
             <div className="mt-4">
-                <RevenueBarChart bars={data.map((d) => ({ key: String(d.hour), label: hh(d.hour), value: d.total }))} />
+                <RevenueBarChart bars={data.map((d) => ({
+                    key: String(d.hour),
+                    label: `${hh(d.hour)}.00-${hh(d.hour)}.59`,
+                    tick: hh(d.hour),
+                    value: d.total,
+                }))} />
             </div>
 
             {/* Nilai terbaca tanpa hover, penting untuk layar sentuh */}
-            <p className="mt-3 text-[11px] text-neutral-500">
+            <p className="mt-3 text-[10px] text-neutral-400">
                 Jam tersibuk:{" "}
                 <span className="font-medium text-foreground">
                     {hh(peak.hour)}.00-{hh(peak.hour)}.59
@@ -115,7 +120,7 @@ function MenuRanking({ items }: { items: DashboardResult["menuRanking"] }) {
                 <p className="mt-3 text-[11px] text-neutral-400">Belum ada menu</p>
             ) : (
                 // Tinggi pas 5 baris (5 x h-8 = max-h-40), sisanya bisa digulir
-                <ol className="mt-3 max-h-40 overflow-y-auto pr-1">
+                <ol className="mt-3 max-h-42 overflow-y-auto pr-1">
                     {sorted.map((m, i) => (
                         <li key={m.id} className="flex space-y-3 items-center gap-2 text-xs">
                             <span className="w-4 tabular-nums text-neutral-400">{i + 1}</span>
@@ -152,8 +157,8 @@ function Body({ result }: { result: DashboardResult }) {
                 <>
                     <HourlyChart data={result.byHour} />
                     <div className="grid gap-4 lg:grid-cols-3">
-                        <MethodPieChart byMethod={result.byMethod} totalSales={summary.totalSales} />
                         <MenuRanking items={result.menuRanking} />
+                        <MethodPieChart legendColumn="grid-cols-2" flexCont="flex-wrap" colSpan="lg:col-span-2" byMethod={result.byMethod} totalSales={summary.totalSales} />
                     </div>
                 </>
             )

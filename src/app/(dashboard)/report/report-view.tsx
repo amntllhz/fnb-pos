@@ -86,9 +86,9 @@ function DailyChart({ daily }: { daily: ReportResult["daily"] }) {
 
 function MenuTable({ rows, totalSales }: { rows: ReportResult["byMenu"]; totalSales: number }) {
     return (
-        <div className={cardClass}>
+        <div className="rounded-xl border bg-card p-4 lg:col-span-2">
             <p className="text-xs font-semibold">Penjualan per Menu</p>
-            <p className="mb-3 text-[11px] text-neutral-400">Diurutkan dari omzet terbesar. Omzet memakai harga saat transaksi terjadi.</p>
+            <p className="mb-3 text-[11px] text-neutral-400">Omzet memakai harga saat transaksi terjadi</p>
             <div className="max-h-96 overflow-y-auto rounded-lg border">
                 <Table>
                     <TableHeader>
@@ -115,34 +115,36 @@ function MenuTable({ rows, totalSales }: { rows: ReportResult["byMenu"]; totalSa
     )
 }
 
-function CashierTable({ rows }: { rows: ReportResult["byCashier"] }) {
+function CashierCards({ rows }: { rows: ReportResult["byCashier"] }) {
     return (
-        <div className={cardClass}>
+        <div className="rounded-xl border bg-card p-4 lg:col-span-2">
             <p className="text-xs font-semibold">Kinerja Kasir</p>
-            <p className="mb-3 text-[11px] text-neutral-400">Kolom Dibatalkan membantu memeriksa transaksi yang di-void.</p>
-            <div className="overflow-hidden rounded-lg border">
-                <Table>
-                    <TableHeader>
-                        <TableRow className="hover:bg-transparent">
-                            <TableHead className={headClass}>Kasir</TableHead>
-                            <TableHead className={headClass}>Transaksi</TableHead>
-                            <TableHead className={headClass}>Omzet</TableHead>
-                            <TableHead className={headClass}>Rata-rata</TableHead>
-                            <TableHead className={headClass}>Dibatalkan</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {rows.map((c) => (
-                            <TableRow key={c.id}>
-                                <TableCell className="text-xs font-medium">{c.name}</TableCell>
-                                <TableCell className={cellClass}>{c.count}</TableCell>
-                                <TableCell className={cn(cellClass, "font-semibold")}>{formatRupiah(c.total)}</TableCell>
-                                <TableCell className={cellClass}>{formatRupiah(c.average)}</TableCell>
-                                <TableCell className={cn(cellClass, c.cancelled > 0 && "font-medium text-prim")}>{c.cancelled}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+            <p className="mb-3 text-[11px] text-neutral-400">Angka Dibatalkan membantu memeriksa transaksi yang di-void.</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+                {rows.map((c) => (
+                    <div key={c.id} className="rounded-lg border p-2">
+                        <div className="bg-gray-200 rounded-lg p-0.5 w-20 mx-auto"></div>
+                        <div className="flex flex-col space-y-0.5 p-3 mt-1">
+                            <p className="truncate text-[10px] font-medium">{c.name}</p>
+                            <p className="text-md font-bold tabular-nums mt-0.5">{formatRupiah(c.total)}</p>
+                            <p className="text-[9px] text-neutral-400">Omzet</p>
+                        </div>
+                        <div className="p-3 text-center border-t border-gray-200">
+                            <div className="flex justify-between">
+                                <p className="text-[10px] text-neutral-400">Transaksi</p>
+                                <p className="text-xs font-medium text-[10px] tabular-nums">{c.count}</p>
+                            </div>
+                            <div className="flex justify-between">
+                                <p className="text-[10px] text-neutral-400">Rata-rata</p>
+                                <p className="text-xs font-medium text-[10px] tabular-nums">{formatRupiah(c.average)}</p>
+                            </div>
+                            <div className="flex justify-between">
+                                <p className="text-[10px] text-neutral-400">Dibatalkan</p>
+                                <p className={cn("text-xs font-medium text-[10px] tabular-nums", c.cancelled > 0 && "text-prim")}>{c.cancelled}</p>
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     )
@@ -190,12 +192,15 @@ export function ReportView({ result }: { result: ReportResult }) {
             ) : (
                 <>
                     <DailyChart daily={result.daily} />
-                    <MethodPieChart byMethod={result.byMethod} totalSales={summary.totalSales} />
+                    <div className="grid grid-cols-5 gap-4">
+                        <MethodPieChart legendColumn="grid-cols-2" flexCont="flex-wrap" colSpan="lg:col-span-3" byMethod={result.byMethod} totalSales={summary.totalSales} />
+                        {/* Tabel kasir tetap tampil walau tanpa penjualan: transaksi yang dibatalkan perlu terlihat */}
+                        {result.byCashier.length > 0 && <CashierCards rows={result.byCashier} />}
+                    </div>
                     <MenuTable rows={result.byMenu} totalSales={summary.totalSales} />
                 </>
-            )}
-            {/* Tabel kasir tetap tampil walau tanpa penjualan: transaksi yang dibatalkan perlu terlihat */}
-            {result.byCashier.length > 0 && <CashierTable rows={result.byCashier} />}
-        </div>
+            )
+            }
+        </div >
     )
 }
