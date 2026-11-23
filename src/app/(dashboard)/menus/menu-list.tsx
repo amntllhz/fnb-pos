@@ -66,7 +66,7 @@ export function MenuList({ menus, role }: { menus: MenuListItem[]; role?: string
                     <p className="text-xs text-neutral-400">Lakukan pengelolaan pesanan dan menu melalui halaman ini</p>
                 </div>
 
-                <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-2 mt-3">
+                <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-2">
 
                     <div className="flex items-center justify-between gap-3">
                         <TabsList className="shrink-0">

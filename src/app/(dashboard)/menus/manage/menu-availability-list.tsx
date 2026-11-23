@@ -105,7 +105,7 @@ export function MenuAvailabilityList({ menus }: { menus: Item[] }) {
                 <p className="text-xs text-neutral-400">Tandai menu yang habis supaya tidak bisa dipesan kasir</p>
             </div>
 
-            <Tabs value={filter} onValueChange={handleFilterChange} className="mt-3 space-y-2">
+            <Tabs value={filter} onValueChange={handleFilterChange} className="space-y-2">
                 <div className="flex items-center justify-between gap-3">
                     <TabsList className="shrink-0">
                         {FILTERS.map((f) => (
