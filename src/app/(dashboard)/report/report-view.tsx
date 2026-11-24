@@ -75,7 +75,7 @@ function DailyChart({ daily }: { daily: ReportResult["daily"] }) {
                     bars={daily.map((d) => ({ key: d.date, label: shortDate(d.date), value: d.total }))}
                 />
             </div>
-            <p className="mt-3 text-[11px] text-neutral-500">
+            <p className="mt-3 text-[10px] text-neutral-400">
                 Hari terbaik: <span className="font-medium text-foreground">{longDate(peak.date)}</span>
                 {" · "}
                 {formatRupiah(peak.total)} dari {peak.count} transaksi
@@ -119,14 +119,14 @@ function CashierCards({ rows }: { rows: ReportResult["byCashier"] }) {
     return (
         <div className="rounded-xl border bg-card p-4 lg:col-span-2">
             <p className="text-xs font-semibold">Kinerja Kasir</p>
-            <p className="mb-3 text-[11px] text-neutral-400">Angka Dibatalkan membantu memeriksa transaksi yang di-void.</p>
+            <p className="mb-3 text-[11px] text-neutral-400">Rigkasan transaksi dari kasir</p>
             <div className="grid gap-3 sm:grid-cols-2">
                 {rows.map((c) => (
                     <div key={c.id} className="rounded-lg border p-2">
                         <div className="bg-gray-200 rounded-lg p-0.5 w-20 mx-auto"></div>
                         <div className="flex flex-col space-y-0.5 p-3 mt-1">
-                            <p className="truncate text-[10px] font-medium">{c.name}</p>
-                            <p className="text-md font-bold tabular-nums mt-0.5">{formatRupiah(c.total)}</p>
+                            <p className="truncate text-[9px] font-medium">{c.name}</p>
+                            <p className="text-md font-bold tracking-tight tabular-nums mt-0.5">{formatRupiah(c.total)}</p>
                             <p className="text-[9px] text-neutral-400">Omzet</p>
                         </div>
                         <div className="p-3 text-center border-t border-gray-200">
@@ -136,7 +136,7 @@ function CashierCards({ rows }: { rows: ReportResult["byCashier"] }) {
                             </div>
                             <div className="flex justify-between">
                                 <p className="text-[10px] text-neutral-400">Rata-rata</p>
-                                <p className="text-xs font-medium text-[10px] tabular-nums">{formatRupiah(c.average)}</p>
+                                <p className="text-xs font-medium tracking-tight text-[10px] tabular-nums">{formatRupiah(c.average)}</p>
                             </div>
                             <div className="flex justify-between">
                                 <p className="text-[10px] text-neutral-400">Dibatalkan</p>
