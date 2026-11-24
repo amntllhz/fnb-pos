@@ -36,7 +36,7 @@ export function HistoryList({ result, role }: { result: HistoryResult; role?: st
             <div className="flex flex-col space-y-1">
                 <h1 className="text-xl font-extrabold">Riwayat Transaksi</h1>
                 <p className="text-xs text-neutral-400">
-                    {isOwner ? "Pantau seluruh transaksi penjualan" : "Daftar transaksi Anda hari ini"}
+                    {isOwner ? "Telusuri catatan transaksi masuk dengan informasi detail" : "Daftar transaksi Anda hari ini"}
                 </p>
             </div>
 

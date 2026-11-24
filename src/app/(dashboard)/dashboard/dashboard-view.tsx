@@ -188,7 +188,7 @@ export function DashboardView({ result, isOwner }: { result: DashboardResult; is
             <div className="flex flex-col space-y-1">
                 <h1 className="text-xl font-extrabold">Dashboard</h1>
                 <p className="text-xs text-neutral-400">
-                    {isOwner ? "Pantau kondisi penjualan dengan cepat" : "Ringkasan penjualan toko hari ini"}
+                    {isOwner ? "Ringkasan dan statistik penjualan harian" : "Ringkasan penjualan toko hari ini"}
                 </p>
             </div>
 

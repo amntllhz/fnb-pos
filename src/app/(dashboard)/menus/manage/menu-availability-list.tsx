@@ -102,7 +102,7 @@ export function MenuAvailabilityList({ menus }: { menus: Item[] }) {
 
             <div className="flex flex-col space-y-1">
                 <h1 className="text-xl font-extrabold">Ketersediaan Menu</h1>
-                <p className="text-xs text-neutral-400">Tandai menu yang habis supaya tidak bisa dipesan kasir</p>
+                <p className="text-xs text-neutral-400">Perbarui ketersediaan menu dengan teliti</p>
             </div>
 
             <Tabs value={filter} onValueChange={handleFilterChange} className="space-y-2">

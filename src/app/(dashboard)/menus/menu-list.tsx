@@ -63,7 +63,7 @@ export function MenuList({ menus, role }: { menus: MenuListItem[]; role?: string
 
                 <div className="flex flex-col space-y-1">
                     <h1 className="text-xl font-extrabold">Daftar Menu</h1>
-                    <p className="text-xs text-neutral-400">Lakukan pengelolaan pesanan dan menu melalui halaman ini</p>
+                    <p className="text-xs text-neutral-400">Kelola informasi menu dan proses pesanan</p>
                 </div>
 
                 <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-2">
