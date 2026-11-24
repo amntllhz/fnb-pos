@@ -44,7 +44,7 @@ function MenuRow({ menu }: { menu: Item }) {
     }
 
     return (
-        <li className="flex items-center justify-between gap-3 px-4 py-3">
+        <li className="flex items-center justify-between gap-3 rounded-xl border bg-card px-4 py-3">
             <div className="min-w-0">
                 <p className="truncate text-xs font-medium">{menu.name}</p>
                 <p className="text-[11px] tabular-nums text-neutral-400">{formatRupiah(menu.price)}</p>
@@ -147,7 +147,7 @@ export function MenuAvailabilityList({ menus }: { menus: Item[] }) {
                             message={isSearching ? "Coba gunakan kata kunci yang berbeda" : filter === "habis" ? "Semua menu sedang ready" : "Tambahkan menu di halaman Menu"}
                         />
                     ) : (
-                        <ul className="divide-y rounded-xl border bg-card">
+                        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                             {visible.map((menu) => (
                                 // key memuat status dari server, supaya baris ikut menyesuaikan setelah data dimuat ulang
                                 <MenuRow key={`${menu.id}-${menu.isAvailable}`} menu={menu} />
