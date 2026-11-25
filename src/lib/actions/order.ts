@@ -9,7 +9,7 @@ import { DEFAULT_STORE_NAME } from '@/lib/constants'
 import type { ReceiptData } from '@/lib/receipt'
 import { getBusinessDate } from '@/lib/business-date'
 import { receiptSelect, toReceipt } from '@/lib/queries/receipt'
-import { CLOSE_HOUR } from '@/lib/business-hours'
+import { OPEN_HOUR, CLOSE_HOUR, isOpenHour } from '@/lib/business-hours'
 import { getBusinessNow } from '@/lib/business-now'
 import { isFinalDay } from '@/lib/export-period'
 
@@ -17,6 +17,13 @@ export async function createOrder(input: unknown) {
     // 1. Harus login (kasir dan owner sama-sama boleh bikin transaksi)
     const session = await auth.api.getSession({ headers: await headers() })
     if (!session) return { success: false as const, error: 'Belum login' }
+
+    if (!isOpenHour(getBusinessNow().hour)) {
+        return {
+            success: false as const,
+            error: `Di luar jam operasional (${OPEN_HOUR}.00-${CLOSE_HOUR}.00). Transaksi tidak bisa diproses.`,
+        }
+    }
 
     // 2. Validasi bentuk data
     const parsed = orderSchema.safeParse(input)

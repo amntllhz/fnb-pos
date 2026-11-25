@@ -17,12 +17,15 @@ import { MenuCartPanel } from "./menu-cart-panel"
 import { MenuCheckoutDialog } from "./menu-checkout-dialog"
 import { cn } from "cn"
 import { MenuListItem } from "./types"
+import { StoreClosedDialog } from "@/components/store-closed-dialog"
+import { currentBusinessHour, isOpenHour } from "@/lib/business-hours"
 
 export function MenuList({ menus, role }: { menus: MenuListItem[]; role?: string }) {
     const [open, setOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
     const [activeTab, setActiveTab] = useState("all")
     const [checkoutOpen, setCheckoutOpen] = useState(false)
+    const [closedOpen, setClosedOpen] = useState(false)
     const cart = useMenuCart()
 
     const isSearching = searchQuery.trim().length > 0
@@ -164,7 +167,7 @@ export function MenuList({ menus, role }: { menus: MenuListItem[]; role?: string
                 onDecrement={cart.decrementQty}
                 onRemove={cart.removeItem}
                 onClear={cart.clearCart}
-                onCheckout={() => setCheckoutOpen(true)}
+                onCheckout={() => (isOpenHour(currentBusinessHour()) ? setCheckoutOpen(true) : setClosedOpen(true))}
             />
 
             {role === "OWNER" && <MenuCreateDialog key={open ? "create-open" : "create-closed"} open={open} onOpenChange={setOpen} />}
@@ -177,6 +180,7 @@ export function MenuList({ menus, role }: { menus: MenuListItem[]; role?: string
                 totalPrice={cart.totalPrice}
                 onSuccess={cart.clearCart}
             />
+            <StoreClosedDialog open={closedOpen} onOpenChange={setClosedOpen} />
         </div>
     )
 }
