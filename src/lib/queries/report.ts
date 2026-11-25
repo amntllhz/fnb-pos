@@ -78,23 +78,23 @@ export async function getReport(params: HistoryParams) {
         .sort((a, b) => b.revenue - a.revenue)
 
     // Kinerja kasir, termasuk yang hanya punya transaksi dibatalkan (penting untuk audit)
-    const userName = new Map(users.map((u) => [u.id, u.name]))
+
     const sales = new Map(
         perCashier.map((c) => [c.cashierId, { count: c._count._all, total: c._sum.total ?? 0 }])
     )
     const voids = new Map(cancelledByCashier.map((c) => [c.cashierId, c._count._all]))
-    const byCashier = [...new Set([...sales.keys(), ...voids.keys()])]
-        .map((id) => {
+    const byCashier = users
+        .map(({ id, name }) => {
             const s = sales.get(id) ?? { count: 0, total: 0 }
             return {
                 id,
-                name: userName.get(id) ?? "-",
+                name,
                 ...s,
                 average: s.count ? Math.round(s.total / s.count) : 0,
                 cancelled: voids.get(id) ?? 0,
             }
         })
-        .sort((a, b) => b.total - a.total)
+        .sort((a, b) => b.total - a.total || a.name.localeCompare(b.name))
 
     return {
         range: { from: dateToYmd(range.from), to: dateToYmd(range.to) },

@@ -122,7 +122,8 @@ function CashierCards({ rows }: { rows: ReportResult["byCashier"] }) {
             <p className="mb-3 text-[11px] text-neutral-400">Rigkasan transaksi dari kasir</p>
             <div className="grid gap-3 sm:grid-cols-2">
                 {rows.map((c) => (
-                    <div key={c.id} className="rounded-lg border p-2">
+
+                    <div key={c.id} className={cn("rounded-lg border p-4", c.count === 0 && c.cancelled === 0 && "opacity-60")}>
                         <div className="bg-gray-200 rounded-lg p-0.5 w-20 mx-auto"></div>
                         <div className="flex flex-col space-y-0.5 p-3 mt-1">
                             <p className="truncate text-[9px] font-medium">{c.name}</p>
