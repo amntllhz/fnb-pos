@@ -4,7 +4,9 @@ import { auth } from "@/lib/auth"
 import { parseHistoryParams } from "@/lib/history-schema"
 import { getHistory } from "@/lib/queries/history"
 import { HistoryList } from "./history-list"
+import type { Metadata } from "next"
 
+export const metadata: Metadata = { title: "Riwayat Transaksi" }
 export default async function HistoryPage({
     searchParams,
 }: {

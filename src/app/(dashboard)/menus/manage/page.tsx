@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma"
 import { MenuAvailabilityList } from "./menu-availability-list"
+import type { Metadata } from "next"
 
+export const metadata: Metadata = { title: "Kelola Ketersediaan Menu" }
 // Layout dashboard sudah menjaga login, dan setMenuAvailability menjaga sisi server
 export default async function MenuManagePage() {
     const menus = await prisma.menu.findMany({

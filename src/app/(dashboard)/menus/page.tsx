@@ -2,7 +2,9 @@ import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { MenuList } from "./menu-list"
+import type { Metadata } from "next"
 
+export const metadata: Metadata = { title: "Kelola Menu" }
 export default async function MenusPage() {
     const session = await auth.api.getSession({ headers: await headers() })
 

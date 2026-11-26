@@ -4,7 +4,9 @@ import { auth } from "@/lib/auth"
 import { parseHistoryParams } from "@/lib/history-schema"
 import { getReport } from "@/lib/queries/report"
 import { ReportView } from "./report-view"
+import type { Metadata } from "next"
 
+export const metadata: Metadata = { title: "Laporan Penjualan" }
 export default async function ReportPage({
     searchParams,
 }: {
