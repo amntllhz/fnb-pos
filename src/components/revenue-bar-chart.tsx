@@ -28,13 +28,13 @@ export function RevenueBarChart({ bars }: { bars: Bar[] }) {
 
     return (
         <InView key={dataKey} className="h-44 w-full">
-            <EChartsBarChart data={bars} config={config} className="h-44 w-full font-">
+            <EChartsBarChart data={bars} config={config} className="h-44 w-full">
                 <EChartsBarChart.Grid />
                 <EChartsBarChart.XAxis dataKey="label" tickFormatter={(value) => ticks.get(value) ?? value} />
                 <EChartsBarChart.YAxis tickFormatter={(value) => compactRupiah(Number(value))} />
                 <EChartsBarChart.Tooltip variant="frosted-glass" />
                 <EChartsBarChart.Bar dataKey="value" />
-                <EChartsBarChart.Legend variant="circle" isClickable />
+                <EChartsBarChart.Legend variant="rounded-square" isClickable />
             </EChartsBarChart>
         </InView>
     )
