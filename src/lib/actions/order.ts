@@ -28,7 +28,10 @@ export async function createOrder(input: unknown) {
     // 2. Validasi bentuk data
     const parsed = orderSchema.safeParse(input)
     if (!parsed.success) return { success: false as const, error: 'Data pesanan tidak valid' }
-    const { items, paymentMethod, amountPaid } = parsed.data
+    const { items, paymentMethod, amountPaid, customerName, cashierId } = parsed.data
+
+    const cashier = await prisma.user.findUnique({ where: { id: cashierId }, select: { id: true } })
+    if (!cashier) return { success: false as const, error: 'Kasir tidak ditemukan' }
 
     // 3. Gabungkan baris menu yang kembar (jaga-jaga kalau request dipalsukan)
     const qtyByMenu = new Map<string, number>()
@@ -74,7 +77,8 @@ export async function createOrder(input: unknown) {
                 data: {
                     orderDate,
                     orderNumber: (last._max.orderNumber ?? 0) + 1,
-                    cashierId: session.user.id,
+                    cashierId,
+                    customerName,
                     total,
                     paymentMethod,
                     amountPaid: paid,

@@ -47,6 +47,7 @@ export async function GET(request: Request) {
         orderBy: [{ orderDate: "asc" }, { orderNumber: "asc" }],
         select: {
             orderDate: true,
+            customerName: true,
             orderNumber: true,
             createdAt: true,
             total: true,
@@ -60,11 +61,12 @@ export async function GET(request: Request) {
     })
 
     const csv = toCsv([
-        ["No. Transaksi", "Tanggal", "Waktu", "Kasir", "Metode", "Total Porsi", "Total", "Uang Diterima", "Kembalian", "Status", "Dibatalkan Pada"],
+        ["No. Transaksi", "Tanggal", "Waktu", "Pelanggan", "Kasir", "Metode", "Total Porsi", "Total", "Uang Diterima", "Kembalian", "Status", "Dibatalkan Pada"],
         ...orders.map((o) => [
             formatOrderNumber(o.orderNumber),
             dateToYmd(o.orderDate),
             timeFormat.format(o.createdAt),
+            o.customerName,
             o.cashier.name,
             paymentMethodLabels[o.paymentMethod],
             o.items.reduce((sum, i) => sum + i.quantity, 0),

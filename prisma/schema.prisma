@@ -69,6 +69,7 @@ model Order {
   id            String        @id @default(uuid())
   orderDate     DateTime      @db.Date
   orderNumber   Int
+  customerName  String?
   cashier       User          @relation(fields: [cashierId], references: [id])
   cashierId     String
   total         Int

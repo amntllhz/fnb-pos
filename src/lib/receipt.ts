@@ -3,6 +3,7 @@ import type { PaymentMethod } from "./order-schema"
 export type ReceiptData = {
     orderNumber: number
     createdAt: string // ISO 8601
+    customerName: string | null
     cashierName: string
     paymentMethod: PaymentMethod
     items: { name: string; quantity: number; price: number }[]

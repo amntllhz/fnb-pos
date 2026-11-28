@@ -20,7 +20,9 @@ import { MenuListItem } from "./types"
 import { StoreClosedDialog } from "@/components/store-closed-dialog"
 import { currentBusinessHour, isOpenHour } from "@/lib/business-hours"
 
-export function MenuList({ menus, role }: { menus: MenuListItem[]; role?: string }) {
+export function MenuList({ menus, role, cashiers, currentUserId }: {
+    menus: MenuListItem[]; role?: string; cashiers: { id: string; name: string }[]; currentUserId: string
+}) {
     const [open, setOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
     const [activeTab, setActiveTab] = useState("all")
@@ -179,6 +181,8 @@ export function MenuList({ menus, role }: { menus: MenuListItem[]; role?: string
                 items={cart.items}
                 totalPrice={cart.totalPrice}
                 onSuccess={cart.clearCart}
+                cashiers={cashiers}
+                defaultCashierId={currentUserId}
             />
             <StoreClosedDialog open={closedOpen} onOpenChange={setClosedOpen} />
         </div>

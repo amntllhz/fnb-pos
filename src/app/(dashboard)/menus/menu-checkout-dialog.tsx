@@ -15,6 +15,7 @@ import { PAYMENT_METHODS, type PaymentMethod } from '@/lib/order-schema'
 import { useMenuCheckout } from './use-menu-checkout'
 import { MenuCheckoutSuccess } from './menu-checkout-success'
 import type { CartItem } from './use-menu-cart'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const paymentIcons: Record<PaymentMethod, LucideIcon> = {
     CASH: Banknote,
@@ -29,11 +30,13 @@ type Props = {
     items: CartItem[]
     totalPrice: number
     onSuccess: () => void
+    cashiers: { id: string; name: string }[]
+    defaultCashierId: string
 }
 
-export function MenuCheckoutDialog({ open, onOpenChange, items, totalPrice, onSuccess }: Props) {
-    const checkout = useMenuCheckout({ items, totalPrice, onSuccess })
-    const { isSubmitting, paymentMethod, amountPaid, fieldError, receipt } = checkout
+export function MenuCheckoutDialog({ open, onOpenChange, items, totalPrice, onSuccess, cashiers, defaultCashierId }: Props) {
+    const checkout = useMenuCheckout({ items, totalPrice, onSuccess, defaultCashierId })
+    const { isSubmitting, paymentMethod, amountPaid, fieldError, receipt, customerName, customerError, cashierId } = checkout
 
     function handleOpenChange(next: boolean) {
         if (isSubmitting) return // jangan tutup saat transaksi sedang diproses
@@ -81,6 +84,38 @@ export function MenuCheckoutDialog({ open, onOpenChange, items, totalPrice, onSu
                                 <span className="text-sm text-prim font-bold">{formatRupiah(totalPrice)}</span>
                             </div>
                         </div>
+
+                        {/* Nama customer: wajib */}
+                        <Field>
+                            <FieldLabel className="text-xs text-neutral-400" htmlFor="customer-name">Nama Customer</FieldLabel>
+                            <InputGroup>
+                                <InputGroupInput
+                                    id="customer-name"
+                                    value={customerName}
+                                    onChange={(e) => checkout.changeCustomerName(e.target.value)}
+                                    placeholder="Nama pemesan"
+                                    maxLength={50}
+                                    aria-invalid={!!customerError}
+                                    className="text-xs"
+                                />
+                            </InputGroup>
+                            {customerError && <FieldError className="text-[10px]">{customerError}</FieldError>}
+                        </Field>
+
+                        {/* Kasir yang bertugas */}
+                        <Field>
+                            <FieldLabel className="text-xs text-neutral-400">Kasir</FieldLabel>
+                            <Select value={cashierId} onValueChange={checkout.changeCashierId}>
+                                <SelectTrigger size="sm" className="w-full text-xs">
+                                    <SelectValue placeholder="Pilih kasir" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {cashiers.map((c) => (
+                                        <SelectItem key={c.id} value={c.id} className="text-xs">{c.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </Field>
 
                         {/* Payment Method */}
                         <Field>

@@ -39,6 +39,7 @@ export function MenuReceipt({ receipt }: { receipt: ReceiptData }) {
                 <Row label="No" value={formatOrderNumber(receipt.orderNumber)} />
                 <Row label="Waktu" value={formatDateTime(receipt.createdAt)} />
                 <Row label="Kasir" value={receipt.cashierName} />
+                <Row label="Pelanggan" value={receipt.customerName ?? '-'} />
             </div>
 
             <Divider />

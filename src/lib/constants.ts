@@ -20,4 +20,4 @@ export const orderStatusLabels: Record<OrderStatus, string> = {
 }
 
 export type Category = (typeof categories)[number]
-export const DEFAULT_STORE_NAME = "JajanKuy"
+export const DEFAULT_STORE_NAME = "Jajankuy"

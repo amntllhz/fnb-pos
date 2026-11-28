@@ -11,6 +11,7 @@ export const receiptSelect = {
     amountPaid: true,
     cashier: { select: { name: true } },
     items: { select: { quantity: true, price: true, menu: { select: { name: true } } } },
+    customerName: true,
 } satisfies Prisma.OrderSelect
 
 type ReceiptOrder = Prisma.OrderGetPayload<{ select: typeof receiptSelect }>
@@ -38,5 +39,6 @@ export async function toReceipt(order: ReceiptOrder): Promise<ReceiptData> {
         amountPaid: order.amountPaid,
         change: order.amountPaid !== null ? order.amountPaid - order.total : null,
         store: await getStoreInfo(),
+        customerName: order.customerName,
     }
 }

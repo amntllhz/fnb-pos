@@ -8,13 +8,19 @@ export const metadata: Metadata = { title: "Kelola Menu" }
 export default async function MenusPage() {
     const session = await auth.api.getSession({ headers: await headers() })
 
-    const rows = await prisma.menu.findMany({
-        where: { isActive: true },
-        orderBy: [{ isAvailable: "desc" }, { createdAt: "desc" }],
-        include: { _count: { select: { items: true } } },
-    })
+    const [rows, cashiers] = await Promise.all([
+        prisma.menu.findMany({
+            where: { isActive: true },
+            orderBy: [{ isAvailable: "desc" }, { createdAt: "desc" }], // pakai orderBy milikmu yang sekarang
+            include: { _count: { select: { items: true } } },
+        }),
+        prisma.user.findMany({
+            select: { id: true, name: true },
+            orderBy: [{ role: "asc" }, { createdAt: "asc" }],
+        }),
+    ])
 
     const menus = rows.map(({ _count, ...menu }) => ({ ...menu, orderCount: _count.items }))
 
-    return <MenuList menus={menus} role={session?.user.role} />
+    return <MenuList menus={menus} role={session?.user.role} cashiers={cashiers} currentUserId={session?.user.id ?? ""} />
 }

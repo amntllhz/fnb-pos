@@ -17,4 +17,6 @@ export const orderSchema = z.object({
         .min(1),
     paymentMethod: z.enum(PAYMENT_METHODS),
     amountPaid: z.number().int().positive().optional(),
+    customerName: z.string().trim().min(1, "Nama customer wajib diisi").max(50),
+    cashierId: z.string().min(1),
 })
